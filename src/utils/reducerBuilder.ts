@@ -29,7 +29,7 @@ export class ReducerBuilder<State> {
                 if (!mergeToState) {
                     return nextState;
                 }
-                return Object.assign({}, state, nextState);
+                return _.merge({}, state, nextState);
             }
 
             return state;

@@ -36,7 +36,7 @@ export class StoreBuilder {
     }
 
     public withReducersMap(reducers: ReducersMapObject) {
-        this.reducers = _.merge({}, reducers);
+        this.reducers = _.merge({}, this.reducers, reducers);
         return this;
     }
 
