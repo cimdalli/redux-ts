@@ -1,7 +1,7 @@
 react-ts
 =============
 
-Utils to define redux reducer/action in typescript.
+Utils to define react redux reducer/action in typescript.
 
 [![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts) 
 [![npm version](https://img.shields.io/npm/v/redux-ts.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
@@ -77,16 +77,14 @@ export const authReducer = new ReducerBuilder<AuthState>()
 
     .handle(Login, (state, action) => {
         
-        if (!state.inProgress) {
-            action.then(dispatch => {
-                fetch(`https://httpbin.org/get?username=${action.username}&password=${action.password}`)
-                    .then(x => x.json())
-                    .then(data => {
-                        dispatch(new SetToken(data.args.username + "|" + data.args.password));
-                        dispatch(push("/dashboard"))
-                    });
-            });
-        }
+	    action.then(dispatch => {
+	        fetch(`https://httpbin.org/get?username=${action.username}&password=${action.password}`)
+	            .then(x => x.json())
+	            .then(data => {
+	                dispatch(new SetToken(data.args.username + "|" + data.args.password));
+	                dispatch(push("/dashboard"))
+	            });
+	    });
 
         return null;
     })
