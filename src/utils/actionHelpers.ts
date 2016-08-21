@@ -52,7 +52,7 @@ const isAsyncAction = (action: AsyncAction | any): action is AsyncAction => {
 export const typedToPlainMiddleware: Middleware =
     <S>(store: MiddlewareAPI<S>) => (next: Dispatch<S>): Dispatch<S> => (action: any) => {
         if (typeof action === "object") {
-            Object.assign(action, {}, action);
+            action = _.merge({}, action);
         }
         return next(action);
     };
