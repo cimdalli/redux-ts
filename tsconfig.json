@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "outDir": "./dist/",
+        "outDir": "./lib/",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",
@@ -10,7 +10,6 @@
         "noEmitHelpers": true
     },
     "exclude": [
-        "node_modules",
-        "dist"
+        "node_modules"
     ]
 }
