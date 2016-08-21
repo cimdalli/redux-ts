@@ -3,8 +3,7 @@ node_js:
   - "4"
   - "5"
 script:
-  - npm run clean
-  - npm run build
+  - npm run prepublish
 branches:
   only:
     - master
