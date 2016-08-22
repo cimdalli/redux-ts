@@ -1,1 +1,1 @@
-import "../src/utils/storeBuilder.spec"
+import '../src/utils/storeBuilder.spec'

@@ -19,11 +19,10 @@ var config = {
         'react': reactExternal,
         'redux': reduxExternal
     },
-    entry: [
-        './src/index.ts'
-    ],
     output: {
-        filename: path.resolve(__dirname, 'dist', 'redux-ts.js')
+        // filename: path.resolve(__dirname, 'dist', 'redux-ts.js')
+        library: 'ReduxTs',
+        libraryTarget: 'umd'
     },
     resolve: {
         extensions: ["", ".ts", ".tsx", ".js", ".jsx"]

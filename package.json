@@ -18,12 +18,13 @@
     "license": "MIT",
     "scripts": {
         "clean": "rimraf dist lib",
-        "start": "npm run clean && npm run tsc",
+        "build": "npm run ts && webpack lib/index.js dist/redux-ts.js",
+        "start": "npm run clean && npm run build",
         "postinstall": "typings install",
         "prepublish": "npm run start",
-        "tsc": "tsc",
-        "tsc:w": "tsc -w",
-        "typings": "typings"
+        "ts:src": "tsc",
+        "ts:test": "tsc --out lib/specs.js test/index.ts typings/index.d.ts",
+        "ts": "npm run ts:src && npm run ts:test"
     },
     "tags": [
         "react",
