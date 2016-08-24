@@ -1,5 +1,5 @@
 import 'mocha'
-import 'chai'
+import { expect } from 'chai'
 import { StoreBuilder } from './storeBuilder'
 
 
@@ -15,7 +15,7 @@ describe("StoreBuilder", () => {
     });
 
     it("should have initial state", () => {
-        chai.expect(store.getState()).equal(INITIAL_STATE);
+        expect(store.getState()).equal(INITIAL_STATE);
     });
 
 });
