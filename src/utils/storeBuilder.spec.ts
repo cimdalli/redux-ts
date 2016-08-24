@@ -1,9 +1,10 @@
-import "mocha"
-import "chai"
-import { StoreBuilder } from '../src/utils/storeBuilder'
+import 'mocha'
+import 'chai'
+import { StoreBuilder } from './storeBuilder'
+
 
 describe("StoreBuilder", () => {
-
+    
     var store: Redux.Store<{}>;
     var INITIAL_STATE = { test: true }
 
@@ -16,4 +17,5 @@ describe("StoreBuilder", () => {
     it("should have initial state", () => {
         chai.expect(store.getState()).equal(INITIAL_STATE);
     });
+
 });

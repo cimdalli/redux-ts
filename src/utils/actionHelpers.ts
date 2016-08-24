@@ -1,3 +1,6 @@
+import * as _ from 'lodash'
+
+
 //http://www.bluewire-technologies.com/2015/redux-actions-for-typescript/
 export interface IAction<T extends Redux.Action> {
     prototype: T;

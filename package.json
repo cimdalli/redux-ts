@@ -2,8 +2,8 @@
   "name": "redux-ts",
   "version": "1.1.4",
   "description": "Utils to define redux reducer/action in typescript",
-  "main": "./dist/redux-ts.js",
-  "typings": "./lib/src/index.d.ts",
+  "main": "lib/src/index.js",
+  "typings": "lib/src/index.d.ts",
   "files": [
     "*.md",
     "dist",
@@ -18,16 +18,16 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf dist lib",
-    "build": "npm run ts && webpack lib/index.js dist/redux-ts.js",
-    "start": "npm run clean && npm run build",
+    "dist": "webpack lib/index.js dist/redux-ts.js && webpack -p lib/index.js dist/redux-ts.min.js",
+    "specs": "webpack lib/specs.js lib/specs.js",
+    "build": "npm run clean && npm run tsc",
+    "start": "npm run test",
     "postinstall": "typings install",
-    "prepublish": "npm run start",
-    "mocha": "mocha --require ./lib/test/test/index.js",
-    "test": "npm run ts:test && npm run mocha",
-    "ts:src": "npm run tsc",
-    "ts:test": "npm run tsc -- --target es5 --outDir lib/test test/index.ts typings/index.d.ts",
-    "ts": "npm run ts:src && npm run ts:test",
-    "tsc": "tsc"
+    "prepublish": "npm run test  && npm run dist",
+    "test": "npm run build && npm run specs && npm run mocha ./lib/specs.js",
+    "mocha": "mocha",
+    "tsc": "tsc",
+    "webpack": "webpack"
   },
   "tags": [
     "react",
@@ -55,13 +55,12 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "karma": "^1.2.0",
     "mocha": "^3.0.2",
     "rimraf": "^2.3.4",
-    "ts-loader": "^0.8.1",
     "typescript": "^1.8.10",
     "typings": "^1.3.2",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "webpack-node-externals": "^1.3.3"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0-0",

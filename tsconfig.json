@@ -1,16 +1,12 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "outFile": "./lib/index.js",
+        "outDir": "./lib/",
         "sourceMap": true,
         "noImplicitAny": true,
-        "module": "amd",
+        "module": "commonjs",
         "target": "es5",
         "experimentalDecorators": true,
         "noEmitHelpers": true
-    },
-    "files": [
-        "src/index.ts",
-        "typings/index.d.ts"
-    ]
+    }
 }

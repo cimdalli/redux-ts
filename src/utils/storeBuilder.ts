@@ -1,15 +1,19 @@
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
+import * as _ from 'lodash'
 
-export class StoreBuilder {
+
+declare var window: any;
+
+export class StoreBuilder<StoreType> {
 
     private middlewares: Redux.Middleware[];
     private reducers: Redux.ReducersMapObject;
-    private initialState: any;
+    private initialState: StoreType;
 
     constructor() {
         this.middlewares = [];
         this.reducers = {};
-        this.initialState = {};
+        this.initialState = {} as StoreType;
     }
 
     public withMiddleware(middleware: Redux.Middleware) {
@@ -17,7 +21,7 @@ export class StoreBuilder {
         return this;
     }
 
-    public withInitialState<S>(state: S) {
+    public withInitialState(state: StoreType) {
         this.initialState = state;
         return this;
     }
@@ -31,13 +35,15 @@ export class StoreBuilder {
         this.reducers = _.merge({}, this.reducers, reducers);
         return this;
     }
+    
 
-    public build<T>() {
+    public build() {
+        
         let middlewares = applyMiddleware(...this.middlewares);
         let reducers = combineReducers(this.reducers);
-        let composer = compose(middlewares, (<any>window).devToolsExtension ? (<any>window).devToolsExtension() : f => f)(createStore);
+        let composer = compose(middlewares, (window && window.devToolsExtension) ? window.devToolsExtension() : f => f)(createStore);
         let store = composer(reducers, this.initialState);
 
-        return store as Redux.Store<T>;
+        return store as Redux.Store<StoreType>;
     }
 }
