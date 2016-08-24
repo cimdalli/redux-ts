@@ -20,14 +20,11 @@
     "clean": "rimraf dist lib",
     "dist": "webpack lib/index.js dist/redux-ts.js && webpack -p lib/index.js dist/redux-ts.min.js",
     "specs": "webpack lib/specs.js lib/specs.js",
-    "build": "npm run clean && npm run tsc",
+    "build": "npm run clean && tsc",
     "start": "npm run test",
     "postinstall": "typings install",
     "prepublish": "npm run test  && npm run dist",
-    "test": "npm run build && npm run specs && npm run mocha ./lib/specs.js",
-    "mocha": "mocha",
-    "tsc": "tsc",
-    "webpack": "webpack"
+    "test": "npm run build && npm run specs && mocha ./lib/specs.js"
   },
   "tags": [
     "react",
