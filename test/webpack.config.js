@@ -1,14 +1,19 @@
 const path = require("path");
-const nodeExternals = require('webpack-node-externals');
+const glob = require("glob");
+const webpack = require("webpack");
 
 
 const config = {
-    externals: [nodeExternals()],
+    entry: glob.sync("./src/**/*.spec.ts"),
     output: {
+        path: './lib',
+        filename: 'specs.js',
         library: 'ReduxTs',
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
+    externals: ['mocha'],
+    // devtool: 'inline-source-map',
     resolve: {
         extensions: ["", ".ts", ".tsx", ".js", ".jsx"]
     },
@@ -17,12 +22,15 @@ const config = {
             {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
-                loader: 'awesome-typescript-loader'
+                loader: 'awesome-typescript-loader',
+                query: {
+                    tsconfig: 'test/tsconfig.json'
+                }
             }
         ]
     },
     progress: true,
-    colors: true,
+    colors: true
 };
 
 module.exports = config;

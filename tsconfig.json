@@ -1,12 +1,15 @@
 {
     "compilerOptions": {
-        "declaration": true,
-        "outDir": "./lib/",
-        "sourceMap": true,
-        "noImplicitAny": true,
         "module": "commonjs",
         "target": "es5",
-        "experimentalDecorators": true,
-        "noEmitHelpers": true
-    }
+        "declaration": true,
+        "declarationDir": "./lib/",
+        "noImplicitAny": true,
+        "noEmitHelpers": true,
+        "experimentalDecorators": true
+    },
+    "files": [
+        "./src/**/*.ts",
+        "./typings/index.d.ts"
+    ]
 }

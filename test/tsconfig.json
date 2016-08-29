@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "noEmitHelpers": true
+    },
+    "files": [
+        "../src/**/*.spec.ts",
+        "../typings/index.d.ts"
+    ]
+}

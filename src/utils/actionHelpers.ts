@@ -1,3 +1,4 @@
+import 'ts-helpers'
 import * as _ from 'lodash'
 
 
@@ -58,7 +59,7 @@ export const typedToPlainMiddleware: Redux.Middleware =
     };
 
 export const asyncMiddleware: Redux.Middleware =
-    <S>(store: Redux.MiddlewareAPI<S>) => (next: Redux.Dispatch<S>): Redux.Dispatch<S> => (action: AsyncAction | Redux.Action) => {
+    <S>(store: Redux.MiddlewareAPI<S>) => (next: Redux.Dispatch<S>): Redux.Dispatch<S> => (action: Redux.Action) => {
         if (isAsyncAction(action)) {
 
             //First dispatch show loading action synchronously
