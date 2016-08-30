@@ -8,13 +8,13 @@ export class StoreBuilder<StoreType> {
     private middlewares: Redux.Middleware[];
     private reducers: Redux.ReducersMapObject;
     private initialState: StoreType;
-    private enhancer: (...arg: any[]) => any;
+    private enhancer: Redux.GenericStoreEnhancer;
 
     constructor() {
         this.middlewares = [typedToPlainMiddleware, asyncMiddleware];
         this.reducers = {};
         this.initialState = {} as StoreType;
-        this.enhancer = f => f;
+        this.enhancer = (f: Redux.StoreCreator) => f;
     }
 
     public withMiddleware(middleware: Redux.Middleware) {
@@ -37,9 +37,9 @@ export class StoreBuilder<StoreType> {
         return this;
     }
 
-    public withComposeEnhancer(enhancer: (a: any) => any) {
-        var innerEnhancer = this.enhancer;
-        this.enhancer = enhancer(innerEnhancer);
+    public withEnhancer(enhancer: Redux.GenericStoreEnhancer) {
+        var preEnhancer = this.enhancer;
+        this.enhancer = (f: Redux.StoreCreator) => enhancer(preEnhancer(f));
         return this;
     }
 

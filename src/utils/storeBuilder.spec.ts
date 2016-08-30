@@ -7,13 +7,13 @@ describe("StoreBuilder", () => {
 
     var store: Redux.Store<{}>;
     var INITIAL_STATE = { test: true }
-    var enhancer = () => 3;
+    var enhancer = (f: Redux.StoreCreator) => { return f; };
 
 
     beforeEach(() => {
         store = new StoreBuilder()
             .withInitialState(INITIAL_STATE)
-            .withComposeEnhancer(enhancer)
+            .withEnhancer(enhancer)
             .build();
     });
 
