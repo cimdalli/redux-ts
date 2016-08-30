@@ -2,8 +2,8 @@
   "name": "redux-ts",
   "version": "1.1.4",
   "description": "Utils to define redux reducer/action in typescript",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "typings": "lib/src/index.d.ts",
   "files": [
     "*.md",
     "dist",
@@ -17,13 +17,15 @@
   ],
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf dist",
-    "start": "npm run tsc",
+    "clean": "rimraf dist lib",
+    "dist": "webpack src/index.ts dist/redux-ts.js  &&  webpack -p src/index.ts dist/redux-ts.min.js",
+    "specs:build": "webpack --config test/webpack.config.js",
+    "specs:run": "mocha ./lib/specs.js",
+    "build": "npm run clean  &&  webpack src/index.ts lib/index.js",
+    "start": "npm run test",
     "postinstall": "typings install",
-    "prepublish": "npm run clean && npm run start",
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "typings": "typings"
+    "prepublish": "npm run test  &&  npm run dist",
+    "test": "npm run build  &&  npm run specs:build  &&  npm run specs:run"
   },
   "tags": [
     "react",
@@ -43,15 +45,24 @@
   ],
   "dependencies": {
     "lodash": "^4.15.0",
-    "react": "^15.2.1",
-    "react-dom": "^15.2.1",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "ts-helpers": "^1.1.1"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^2.1.1",
+    "chai": "^3.5.0",
+    "mocha": "^2.0.1",
+    "rimraf": "^2.5.4",
     "typescript": "^1.8.10",
-    "typings": "^1.3.2",
-    "rimraf": "^2.3.4"
+    "typings": "^1.3.3",
+    "webpack": "^1.13.2",
+    "webpack-node-externals": "^1.3.3"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0-0",
+    "redux": "^2.0.0 || ^3.0.0"
   }
 }

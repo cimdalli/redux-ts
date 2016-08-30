@@ -1,4 +1,5 @@
-import { Middleware, MiddlewareAPI, Dispatch } from 'redux'
+import 'ts-helpers'
+import * as _ from 'lodash'
 
 
 //http://www.bluewire-technologies.com/2015/redux-actions-for-typescript/
@@ -13,17 +14,17 @@ export abstract class SyncAction implements Redux.Action {
     }
 }
 
-export type NullableDispatch = Dispatch<any> | void;
+export type NullableDispatch = Redux.Dispatch<any> | void;
 
 export abstract class AsyncAction extends SyncAction implements Promise<NullableDispatch> {
-    resolve: (value?: Dispatch<any>) => void;
+    resolve: (value?: Redux.Dispatch<any>) => void;
     reject: (reason?: any) => void;
-    promise: Promise<Dispatch<any>> = new Promise<Dispatch<any>>((resolve, reject) => {
+    promise: Promise<Redux.Dispatch<any>> = new Promise<Redux.Dispatch<any>>((resolve, reject) => {
         this.resolve = resolve;
         this.reject = reject;
     });
 
-    then(onfulfilled?: (value: Dispatch<any>) => NullableDispatch | PromiseLike<NullableDispatch>, onrejected?: (reason: any) => void): Promise<NullableDispatch> {
+    then(onfulfilled?: (value: Redux.Dispatch<any>) => NullableDispatch | PromiseLike<NullableDispatch>, onrejected?: (reason: any) => void): Promise<NullableDispatch> {
         return this.promise.then(onfulfilled, onrejected);
     }
 
@@ -49,16 +50,16 @@ const isAsyncAction = (action: AsyncAction | any): action is AsyncAction => {
     return (<AsyncAction>action).promise !== undefined;
 }
 
-export const typedToPlainMiddleware: Middleware =
-    <S>(store: MiddlewareAPI<S>) => (next: Dispatch<S>): Dispatch<S> => (action: any) => {
+export const typedToPlainMiddleware: Redux.Middleware =
+    <S>(store: Redux.MiddlewareAPI<S>) => (next: Redux.Dispatch<S>): Redux.Dispatch<S> => (action: any) => {
         if (typeof action === "object") {
             action = _.merge({}, action);
         }
         return next(action);
     };
 
-export const asyncMiddleware: Middleware =
-    <S>(store: MiddlewareAPI<S>) => (next: Dispatch<S>): Dispatch<S> => (action: AsyncAction | Redux.Action) => {
+export const asyncMiddleware: Redux.Middleware =
+    <S>(store: Redux.MiddlewareAPI<S>) => (next: Redux.Dispatch<S>): Redux.Dispatch<S> => (action: Redux.Action) => {
         if (isAsyncAction(action)) {
 
             //First dispatch show loading action synchronously
