@@ -52,7 +52,7 @@
     "ts-helpers": "^1.1.1"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^2.1.1",
+    "awesome-typescript-loader": "2.1.1",
     "chai": "^3.5.0",
     "mocha": "^2.0.1",
     "rimraf": "^2.5.4",
