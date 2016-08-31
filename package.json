@@ -54,6 +54,7 @@
   "devDependencies": {
     "awesome-typescript-loader": "2.1.1",
     "chai": "^3.5.0",
+    "glob": "^7.0.6",
     "mocha": "^2.0.1",
     "rimraf": "^2.5.4",
     "typescript": "^1.8.10",
