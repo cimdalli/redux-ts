@@ -17,15 +17,16 @@
   ],
   "license": "MIT",
   "scripts": {
+    "build:dev": "cross-env NODE_ENV=dev webpack src/index.ts lib/index.js",
+    "build:prod": "cross-env NODE_ENV=prod webpack src/index.ts dist/redux-ts.js",
+    "build:prod:min": "cross-env NODE_ENV=prod webpack -p src/index.ts dist/redux-ts.min.js",
+    "build:test": "cross-env NODE_ENV=test webpack --output-filename lib/specs.js",
     "clean": "rimraf dist lib",
-    "dist": "webpack src/index.ts dist/redux-ts.js  &&  webpack -p src/index.ts dist/redux-ts.min.js",
-    "specs:build": "webpack --config test/webpack.config.js",
-    "specs:run": "mocha ./lib/specs.js",
-    "build": "npm run clean  &&  webpack src/index.ts lib/index.js",
-    "start": "npm run test",
+    "build": "npm run build:test  &&  npm run build:prod  &&  npm run build:prod:min  &&  npm run build:dev",
     "postinstall": "typings install",
-    "prepublish": "npm run test  &&  npm run dist",
-    "test": "npm run build  &&  npm run specs:build  &&  npm run specs:run"
+    "prepublish": "npm run clean  &&  npm run build",
+    "test": "mocha ./lib/specs.js",
+    "test:watch": "npm test -- --watch"
   },
   "tags": [
     "react",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "awesome-typescript-loader": "2.1.1",
     "chai": "^3.5.0",
+    "cross-env": "^2.0.1",
     "glob": "^7.0.6",
     "mocha": "^2.0.1",
     "rimraf": "^2.5.4",
