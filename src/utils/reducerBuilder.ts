@@ -5,9 +5,8 @@ export type Reducer<State, ActionType extends SyncAction> = (state: State, actio
 
 export class ReducerBuilder<State> {
 
-    actions: { [type: string]: Reducer<State, SyncAction> } = {};
-    initState: State;
-
+    private actions: { [type: string]: Reducer<State, SyncAction> } = {};
+    private initState: State;
 
     public init(state: State) {
         this.initState = state;
@@ -32,7 +31,7 @@ export class ReducerBuilder<State> {
                 return _.merge({}, state, nextState);
             }
 
-            return state;
+            return state || {};
         }
     }
 }

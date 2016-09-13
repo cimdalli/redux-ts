@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
-import { typedToPlainMiddleware, asyncMiddleware } from '../utils/actionHelpers'
+import { asyncMiddleware } from '../utils/asyncMiddleware'
 
 
 export class StoreBuilder<StoreType> {
@@ -11,7 +11,7 @@ export class StoreBuilder<StoreType> {
     private enhancer: Redux.GenericStoreEnhancer;
 
     constructor() {
-        this.middlewares = [typedToPlainMiddleware, asyncMiddleware];
+        this.middlewares = [asyncMiddleware];
         this.reducers = {};
         this.initialState = {} as StoreType;
         this.enhancer = (f: Redux.StoreCreator) => f;
@@ -33,7 +33,7 @@ export class StoreBuilder<StoreType> {
     }
 
     public withReducersMap(reducers: Redux.ReducersMapObject) {
-        this.reducers = _.merge({}, this.reducers, reducers);
+        this.reducers = _.merge({}, this.reducers, reducers) as Redux.ReducersMapObject;
         return this;
     }
 
@@ -45,7 +45,6 @@ export class StoreBuilder<StoreType> {
 
 
     public build() {
-
         let middlewares = applyMiddleware(...this.middlewares);
         let reducers = combineReducers(this.reducers);
         let composer = compose(middlewares, this.enhancer)(createStore);
