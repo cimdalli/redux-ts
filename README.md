@@ -16,12 +16,10 @@ npm install --save redux-ts
 Create redux store with builder pattern.
 
 ```js
-import { StoreBuilder, typedToPlainMiddleware, asyncMiddleware } from 'redux-ts'
+import { StoreBuilder } from 'redux-ts'
 
 var store: Redux.Store<StoreState> = 
 	new StoreBuilder().withInitialState({test:true})
-					  .withMiddleware(typedToPlainMiddleware)
-			          .withMiddleware(asyncMiddleware)
 			          .withReducersMap(reducers)
 			          .build<StoreState>();
 } 
