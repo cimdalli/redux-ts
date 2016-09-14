@@ -18,10 +18,10 @@ Create redux store with builder pattern.
 ```js
 import { StoreBuilder } from 'redux-ts'
 
-var store: Redux.Store<StoreState> = 
-	new StoreBuilder().withInitialState({test:true})
-			          .withReducersMap(reducers)
-			          .build<StoreState>();
+var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
+										.withInitialState({test:true})
+										.withReducersMap(reducers)
+										.build();
 } 
 ```
 
