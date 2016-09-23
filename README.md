@@ -20,7 +20,7 @@ import { StoreBuilder } from 'redux-ts'
 
 var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
 										.withInitialState({test:true})
-										.withReducersMap(reducers)
+										.withReducer("reducer", reducer)
 										.build();
 } 
 ```

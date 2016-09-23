@@ -6,15 +6,18 @@ import { StoreBuilder } from './storeBuilder'
 describe("Store", () => {
 
     var TestAction = <Redux.Action>{ type: "test" };
+    var reducer = (state: any = {}, action: any) => { return state };
+    var initState = { reducer: { test: true } };
 
     describe("with inital state", () => {
-        var state = { test: true }
+
         var store = new StoreBuilder()
-            .withInitialState(state)
+            .withInitialState(initState)
+            .withReducersMap({ reducer })
             .build();
 
         it("should have correct value", () => {
-            expect(store.getState()).equal(state);
+            expect(store.getState()).equal(initState);
         });
     });
 
@@ -24,6 +27,7 @@ describe("Store", () => {
         var testMiddleware = (store: any) => (next: any) => (action: any) => { isSet = true; }
         var store = new StoreBuilder()
             .withMiddleware(testMiddleware)
+            .withReducersMap({ reducer })
             .build();
 
         store.dispatch(TestAction);
@@ -77,6 +81,7 @@ describe("Store", () => {
             return f;
         };
         var store = new StoreBuilder()
+            .withReducersMap({ reducer })
             .withEnhancer(enhancer)
             .build();
 

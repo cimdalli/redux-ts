@@ -1,6 +1,6 @@
 {
   "name": "redux-ts",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Utils to define redux reducer/action in typescript",
   "main": "lib/index.js",
   "typings": "lib/src/index.d.ts",
@@ -45,7 +45,6 @@
     "decorator"
   ],
   "dependencies": {
-    "lodash": "^4.15.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",

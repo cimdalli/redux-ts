@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import { asyncMiddleware } from '../utils/asyncMiddleware'
 
@@ -33,7 +32,9 @@ export class StoreBuilder<StoreType> {
     }
 
     public withReducersMap(reducers: Redux.ReducersMapObject) {
-        this.reducers = _.merge({}, this.reducers, reducers) as Redux.ReducersMapObject;
+        for (var reducer in reducers) {
+            this.reducers[reducer] = reducers[reducer];
+        }
         return this;
     }
 

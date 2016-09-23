@@ -18,17 +18,13 @@ export class ReducerBuilder<State> {
         return this;
     }
 
-    public build(mergeToState: boolean = true) {
-        return (state: State = this.initState, action: SyncAction) => {
+    public build() {
+        return (state: State = this.initState, action: SyncAction): State | {} => {
             let type = action.type;
             let actionBody = this.actions[type];
 
             if (!!actionBody) {
-                let nextState = actionBody(state, action);
-                if (!mergeToState) {
-                    return nextState;
-                }
-                return _.merge({}, state, nextState);
+                return actionBody(state, action);
             }
 
             return state || {};
