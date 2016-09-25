@@ -25,15 +25,20 @@ const config = {
                 exclude: /node_modules/,
                 loader: 'awesome-typescript',
                 query: {
-                    declaration: isDev
+                    declaration: isDev,
+                    sourceMap: true
                 }
             }
         ]
+
     },
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(env)
+        }),
+        new webpack.SourceMapDevToolPlugin({
+            filename: '[file].map'
         })
     ]
 };
