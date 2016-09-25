@@ -32,14 +32,14 @@ export class StoreBuilder<StoreType> {
     }
 
     public withReducersMap(reducers: Redux.ReducersMapObject) {
-        for (var reducer in reducers) {
+        for (let reducer in reducers) {
             this.reducers[reducer] = reducers[reducer];
         }
         return this;
     }
 
     public withEnhancer(enhancer: Redux.GenericStoreEnhancer) {
-        var preEnhancer = this.enhancer;
+        let preEnhancer = this.enhancer;
         this.enhancer = (f: Redux.StoreCreator) => enhancer(preEnhancer(f));
         return this;
     }
