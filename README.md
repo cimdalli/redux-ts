@@ -27,25 +27,22 @@ var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
 
 ## Actions
 
-Actions store data that are required on reducers. Declaration of them are succeed with es6 decorators so no need to define type again. Depend on need, action could be either sync or async (like [redux-thunk](https://github.com/gaearon/redux-thunk)).
+Actions store data that are required on reducers. Declaration of them are succeed by their class name so no need to define type again. Depend on need, action could be either sync or async (like [redux-thunk](https://github.com/gaearon/redux-thunk)).
 
 ```js
-import { Action, SyncAction, AsyncAction } from 'redux-ts'
+import { SyncAction, AsyncAction } from 'redux-ts'
 import { push } from 'react-router-redux'
 
 
-@Action
 export class Login extends AsyncAction {
     constructor(public username: string, public password: string) {
         super();
     }
 }
 
-@Action
 export class Logout extends AsyncAction { }
 
 
-@Action
 export class SetToken extends SyncAction {
     constructor(public token: string) {
         super();
@@ -84,7 +81,7 @@ export const authReducer = new ReducerBuilder<AuthState>()
 	            });
 	    });
 
-        return null;
+        return state;
     })
 
 
@@ -95,7 +92,7 @@ export const authReducer = new ReducerBuilder<AuthState>()
             dispatch(push("/dashboard"));
         });
 
-        return null;
+        return state;
     })
 
 
@@ -108,9 +105,9 @@ export const authReducer = new ReducerBuilder<AuthState>()
             localStorage.removeItem(action.getTokenKey());
         }
 
-        return {
+        return Object.assign({}, state, {
             token: action.token
-        };
+        });
     })
 
 
