@@ -1,12 +1,11 @@
 import { SyncAction, AsyncAction } from '../utils/actionHelpers'
 
 
-interface IAction<T extends Redux.Action> {
+export interface IAction<T extends Redux.Action> {
     prototype: T;
 }
 
-
-type Reducer<State, ActionType extends SyncAction> = (state: State, action: ActionType) => State;
+export type Reducer<State, ActionType extends SyncAction> = (state: State, action: ActionType) => State;
 
 export class ReducerBuilder<State> {
 
