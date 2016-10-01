@@ -1,4 +1,5 @@
 import 'ts-helpers'
+import "./promiseHelpers"
 
 
 export type NullableDispatch = Redux.Dispatch<any> | void;
@@ -17,5 +18,9 @@ export abstract class AsyncAction extends SyncAction implements Promise<Nullable
 
     catch(onrejected?: (reason: any) => NullableDispatch | PromiseLike<NullableDispatch>): Promise<NullableDispatch> {
         return this.promise.catch(onrejected);
+    }
+
+    finally(onfulfilled?: (value?: NullableDispatch, isSuccess?: boolean) => any | PromiseLike<NullableDispatch>): Promise<NullableDispatch> {
+        return this.promise.finally(onfulfilled);
     }
 }

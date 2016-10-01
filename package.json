@@ -1,6 +1,6 @@
 {
   "name": "redux-ts",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Utils to define redux reducer/action in typescript",
   "main": "lib/index.js",
   "typings": "lib/src/index.d.ts",
@@ -31,18 +31,20 @@
   "tags": [
     "react",
     "redux",
-    "typesctipt",
+    "typescript",
+    "ts",
     "action",
     "reducer",
-    "decorator"
+    "async"
   ],
   "keywords": [
     "react",
     "redux",
-    "typesctipt",
+    "typescript",
+    "ts",
     "action",
     "reducer",
-    "decorator"
+    "async"
   ],
   "dependencies": {
     "react": "^15.3.1",
