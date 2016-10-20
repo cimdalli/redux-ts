@@ -44,7 +44,8 @@
     "ts",
     "action",
     "reducer",
-    "async"
+    "async",
+    "react-component"
   ],
   "dependencies": {
     "react": "^15.3.1",
