@@ -1,18 +1,18 @@
 import 'ts-helpers'
 import "./promiseHelpers"
+import { Dispatch, Action } from 'redux'
 
+export type NullableDispatch = Dispatch<any> | void;
 
-export type NullableDispatch = Redux.Dispatch<any> | void;
-
-export abstract class SyncAction implements Redux.Action {
+export abstract class SyncAction implements Action {
     type: string;
 }
 
 export abstract class AsyncAction extends SyncAction implements Promise<NullableDispatch>{
 
-    private promise: Promise<Redux.Dispatch<any>>
+    private promise: Promise<Dispatch<any>>
 
-    then(onfulfilled?: (value: Redux.Dispatch<any>) => NullableDispatch | PromiseLike<NullableDispatch>, onrejected?: (reason: any) => void): Promise<NullableDispatch> {
+    then(onfulfilled?: (value: Dispatch<any>) => NullableDispatch | PromiseLike<NullableDispatch>, onrejected?: (reason: any) => void): Promise<NullableDispatch> {
         return this.promise.then(onfulfilled, onrejected);
     }
 

@@ -1,8 +1,9 @@
-import 'mocha'
-import { expect } from 'chai'
-import { StoreBuilder } from './storeBuilder'
-import { ReducerBuilder } from './reducerBuilder'
+import { Action, Store, Reducer } from 'redux'
 import { SyncAction, AsyncAction } from './actionHelpers'
+import { ReducerBuilder } from './reducerBuilder'
+import { StoreBuilder } from './storeBuilder'
+import { expect } from 'chai'
+import 'mocha'
 
 
 interface SampleState {
@@ -58,9 +59,9 @@ describe("Reducer", () => {
 
     describe("with async action handler", () => {
         var dispatchedEvents: any[] = [];
-        var store: Redux.Store<SampleStore>;
+        var store: Store<SampleStore>;
 
-        var hookReducer: Redux.Reducer<any> = (state: any = {}, action: Redux.Action) => {
+        var hookReducer: Reducer<any> = (state: any = {}, action: Action) => {
             if (!action.type.startsWith("@@")) {
                 dispatchedEvents.push(action.type);
             }

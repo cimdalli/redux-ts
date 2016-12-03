@@ -1,7 +1,8 @@
+import { Action } from 'redux'
 import { SyncAction, AsyncAction } from '../utils/actionHelpers'
 
 
-export interface IAction<T extends Redux.Action> {
+export interface IAction<T extends Action> {
     prototype: T;
 }
 

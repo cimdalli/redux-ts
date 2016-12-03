@@ -1,11 +1,12 @@
-import 'mocha'
-import { expect } from 'chai'
+import { Action, StoreCreator } from 'redux'
 import { StoreBuilder } from './storeBuilder'
+import { expect } from 'chai'
+import 'mocha'
 
 
 describe("Store", () => {
 
-    var TestAction = <Redux.Action>{ type: "test" };
+    var TestAction = <Action>{ type: "test" };
     var reducer = (state: any = {}, action: any) => { return state };
     var initState = { reducer: { test: true } };
 
@@ -40,7 +41,7 @@ describe("Store", () => {
 
     describe("with reducer", () => {
         var isSet = false;
-        var testReducer = (state = {}, action: Redux.Action) => {
+        var testReducer = (state = {}, action: Action) => {
             if (action.type == TestAction.type) { isSet = true; }
             return state;
         };
@@ -58,7 +59,7 @@ describe("Store", () => {
 
     describe("with reducer map", () => {
         var isSet = false;
-        var testReducer = (state = {}, action: Redux.Action) => {
+        var testReducer = (state = {}, action: Action) => {
             if (action.type == TestAction.type) { isSet = true; }
             return state;
         }
@@ -76,7 +77,7 @@ describe("Store", () => {
 
     describe("with enhancer", () => {
         var isSet = false;
-        var enhancer = (f: Redux.StoreCreator) => {
+        var enhancer = (f: StoreCreator) => {
             isSet = true;
             return f;
         };

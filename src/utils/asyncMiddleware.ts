@@ -1,11 +1,12 @@
+import { Action, MiddlewareAPI, Dispatch } from 'redux'
 import { SyncAction, AsyncAction } from './actionHelpers'
 
 
-const isSyncAction = (action: Redux.Action): action is any => {
+const isSyncAction = (action: Action): action is any => {
     return action instanceof SyncAction;
 }
 
-const isAsyncAction = (action: Redux.Action): action is any => {
+const isAsyncAction = (action: Action): action is any => {
     return action instanceof AsyncAction;
 }
 
@@ -19,12 +20,12 @@ const mergeObject = (action: any): any => {
     return merged;
 }
 
-export const asyncMiddleware = <S>(store: Redux.MiddlewareAPI<S>) => (next: Redux.Dispatch<S>): Redux.Dispatch<S> => (action: Redux.Action) => {
+export const asyncMiddleware = <S>(store: MiddlewareAPI<S>) => (next: Dispatch<S>): Dispatch<S> => (action: Action) => {
     if (isSyncAction(action)) {
-        action.type = action.constructor.name;
+        action.type = (<any>action).constructor.name;
 
         if (isAsyncAction(action)) {
-            action.promise = new Promise<Redux.Dispatch<any>>((resolve, reject) => {
+            (<any>action).promise = new Promise<Dispatch<any>>((resolve, reject) => {
                 //After original dispatch lifecycle, resolve dispatch in order to handle async operations
                 setTimeout(() => {
                     resolve(store.dispatch);

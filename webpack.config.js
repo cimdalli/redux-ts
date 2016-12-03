@@ -22,15 +22,15 @@ const config = {
         loaders: [
             {
                 test: /\.tsx?$/,
-                exclude: /node_modules/,
-                loader: 'awesome-typescript',
-                query: {
-                    declaration: isDev,
-                    sourceMap: true
-                }
+                loader: 'ts-loader'
             }
         ]
-
+    },
+    ts: {
+        compilerOptions: {
+            declaration: isDev,
+            sourceMap: true
+        }
     },
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),

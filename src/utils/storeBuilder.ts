@@ -1,22 +1,22 @@
-import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
+import { combineReducers, createStore, applyMiddleware, compose, Middleware, ReducersMapObject, GenericStoreEnhancer, StoreCreator, Reducer, Store } from 'redux';
 import { asyncMiddleware } from '../utils/asyncMiddleware'
 
 
 export class StoreBuilder<StoreType> {
 
-    private middlewares: Redux.Middleware[];
-    private reducers: Redux.ReducersMapObject;
+    private middlewares: Middleware[];
+    private reducers: ReducersMapObject;
     private initialState: StoreType;
-    private enhancer: Redux.GenericStoreEnhancer;
+    private enhancer: GenericStoreEnhancer;
 
     constructor() {
         this.middlewares = [asyncMiddleware];
         this.reducers = {};
         this.initialState = {} as StoreType;
-        this.enhancer = (f: Redux.StoreCreator) => f;
+        this.enhancer = (f: StoreCreator) => f;
     }
 
-    public withMiddleware(middleware: Redux.Middleware) {
+    public withMiddleware(middleware: Middleware) {
         this.middlewares.push(middleware);
         return this;
     }
@@ -26,21 +26,21 @@ export class StoreBuilder<StoreType> {
         return this;
     }
 
-    public withReducer<S>(name: string, reducer: Redux.Reducer<S>) {
+    public withReducer<S>(name: string, reducer: Reducer<S>) {
         this.reducers[name] = reducer;
         return this;
     }
 
-    public withReducersMap(reducers: Redux.ReducersMapObject) {
+    public withReducersMap(reducers: ReducersMapObject) {
         for (let reducer in reducers) {
             this.reducers[reducer] = reducers[reducer];
         }
         return this;
     }
 
-    public withEnhancer(enhancer: Redux.GenericStoreEnhancer) {
+    public withEnhancer(enhancer: GenericStoreEnhancer) {
         let preEnhancer = this.enhancer;
-        this.enhancer = (f: Redux.StoreCreator) => enhancer(preEnhancer(f));
+        this.enhancer = (f: StoreCreator) => enhancer(preEnhancer(f));
         return this;
     }
 
@@ -51,6 +51,6 @@ export class StoreBuilder<StoreType> {
         let composer = compose(middlewares, this.enhancer)(createStore);
         let store = composer(reducers, this.initialState);
 
-        return store as Redux.Store<StoreType>;
+        return store as Store<StoreType>;
     }
 }
