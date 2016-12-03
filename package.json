@@ -1,6 +1,6 @@
 {
   "name": "redux-ts",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Utils to define redux reducer/action in typescript",
   "main": "lib/index.js",
   "typings": "lib/src/index.d.ts",
@@ -23,7 +23,7 @@
     "build:test": "cross-env NODE_ENV=test webpack --output-filename lib/specs.js",
     "clean": "rimraf dist lib",
     "build": "npm run build:dev  &&  npm run build:prod  &&  npm run build:prod:min",
-    "prepublish": "npm run clean  &&  npm run build  &&  npm run test",
+    "prepublish": "npm run clean  &&  npm run build  &&  npm run test:run",
     "test": "npm run clean  &&  npm run build:test  &&  npm run test:run",
     "test:run": "mocha --require source-map-support/register ./lib/specs.js"
   },
