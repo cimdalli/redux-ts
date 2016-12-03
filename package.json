@@ -22,7 +22,7 @@
     "build:prod:min": "cross-env NODE_ENV=prod webpack -p src/index.ts dist/redux-ts.min.js",
     "build:test": "cross-env NODE_ENV=test webpack --output-filename lib/specs.js",
     "clean": "rimraf dist lib",
-    "build": "npm run build:dev  &&  npm run build:prod  &&  npm run build:prod:min",
+    "build": "npm run build:dev  &&  npm run build:test  &&  npm run build:prod  &&  npm run build:prod:min",
     "prepublish": "npm run clean  &&  npm run build  &&  npm run test:run",
     "test": "npm run clean  &&  npm run build:test  &&  npm run test:run",
     "test:run": "mocha --require source-map-support/register ./lib/specs.js"
