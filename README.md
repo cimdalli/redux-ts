@@ -25,6 +25,18 @@ var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
 } 
 ```
 
+> To enable *chrome redux tool*; first declare a const then register within *StoreBuilder*
+
+```js
+const devTool = (f: Redux.StoreCreator) => {
+    return ((window as any).__REDUX_DEVTOOLS_EXTENSION__) ? (window as any).__REDUX_DEVTOOLS_EXTENSION__ : f
+}
+
+var store = new StoreBuilder<StoreState>()
+					.withEnhancer(devTool);
+```
+
+
 ## Actions
 
 Actions store data that are required on reducers. Declaration of them are succeed by their class name so no need to define type again. Depend on need, action could be either sync or async (like [redux-thunk](https://github.com/gaearon/redux-thunk)).
