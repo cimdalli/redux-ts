@@ -1,4 +1,3 @@
-import 'ts-helpers'
 import "./promiseHelpers"
 import { Dispatch, Action } from 'redux'
 

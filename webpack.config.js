@@ -16,24 +16,25 @@ const config = {
         umdNamedDefine: true
     },
     resolve: {
-        extensions: ["", ".ts", ".tsx", ".js", ".jsx"]
+        extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.tsx?$/,
-                loader: 'ts-loader'
+                use: [{
+                    loader: 'ts-loader',
+                    options: {
+                        compilerOptions: {
+                            declaration: isDev,
+                            sourceMap: true
+                        }
+                    }
+                }]
             }
         ]
     },
-    ts: {
-        compilerOptions: {
-            declaration: isDev,
-            sourceMap: true
-        }
-    },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(env)
         }),
