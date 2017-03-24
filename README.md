@@ -19,9 +19,9 @@ Create redux store with builder pattern.
 import { StoreBuilder } from 'redux-ts'
 
 var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
-										.withInitialState({test:true})
-										.withReducer("reducer", reducer)
-										.build();
+                                            .withInitialState({test:true})
+                                            .withReducer("reducer", reducer)
+                                            .build();
 } 
 ```
 
@@ -33,7 +33,8 @@ const devTool = (f: Redux.StoreCreator) => {
 }
 
 var store = new StoreBuilder<StoreState>()
-					.withEnhancer(devTool);
+                    .withEnhancer(devTool)
+                    .build();
 ```
 
 
