@@ -1,5 +1,6 @@
 import { combineReducers, createStore, applyMiddleware, compose, Middleware, ReducersMapObject, GenericStoreEnhancer, StoreCreator, Reducer, Store } from 'redux'
-import { asyncMiddleware } from '../utils/asyncMiddleware'
+import { asyncMiddleware } from './asyncMiddleware'
+import './browserPolyfill'
 
 
 export class StoreBuilder<StoreType> {

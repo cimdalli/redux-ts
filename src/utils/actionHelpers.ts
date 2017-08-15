@@ -7,7 +7,7 @@ export abstract class SyncAction implements Action {
     type: string
 }
 
-export abstract class AsyncAction extends SyncAction implements Promise<NullableDispatch>{
+export abstract class AsyncAction extends SyncAction {
     private resolve: (value?: Dispatch<any> | PromiseLike<Dispatch<any>>) => void
     private promise: Promise<Dispatch<any>> = new Promise<Dispatch<any>>((resolve, reject) => {
         this.resolve = resolve

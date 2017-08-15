@@ -25,7 +25,7 @@ describe("Store", () => {
 
     describe("with middleware", () => {
         var isSet = false
-        var testMiddleware = (store: any) => (next: any) => (action: any) => { isSet = true }
+        var testMiddleware = (store: any) => (next: any) => (action: any) => { isSet = true; return this; }
         var store = new StoreBuilder()
             .withMiddleware(testMiddleware)
             .withReducersMap({ reducer })
