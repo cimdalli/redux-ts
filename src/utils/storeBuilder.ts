@@ -9,6 +9,7 @@ export class StoreBuilder<StoreType> {
     private reducers: ReducersMapObject
     private initialState: StoreType
     private enhancer: GenericStoreEnhancer
+    private devTools = (f: StoreCreator) => ((window as any).__REDUX_DEVTOOLS_EXTENSION__) ? (window as any).__REDUX_DEVTOOLS_EXTENSION__ : f
 
     constructor() {
         this.middlewares = [asyncMiddleware]
@@ -42,6 +43,11 @@ export class StoreBuilder<StoreType> {
     public withEnhancer(enhancer: GenericStoreEnhancer) {
         let preEnhancer = this.enhancer
         this.enhancer = (f: StoreCreator) => enhancer(preEnhancer(f))
+        return this
+    }
+
+    public withDevTools() {
+        this.withEnhancer(this.devTools)
         return this
     }
 
