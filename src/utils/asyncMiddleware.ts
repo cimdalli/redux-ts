@@ -1,42 +1,41 @@
-import { Action, MiddlewareAPI, Dispatch } from 'redux'
+import { Action, Middleware } from 'redux'
 import { SyncAction, AsyncAction } from './actionHelpers'
 
-
 const isSyncAction = (action: Action): action is any => {
-    return action instanceof SyncAction
+  return action instanceof SyncAction
 }
 
 const isAsyncAction = (action: Action): action is any => {
-    return action instanceof AsyncAction
+  return action instanceof AsyncAction
 }
 
 const mergeObject = (action: any): any => {
-    let merged: any = {}
-    for (var key in action) {
-        if (key !== 'constructor') {
-            merged[key] = (<any>action)[key]
-        }
+  const merged: any = {}
+  for (const key in action) {
+    if (key !== 'constructor') {
+      merged[key] = (<any>action)[key]
     }
-    return merged
+  }
+  return merged
 }
 
-export const asyncMiddleware = <S>(store: MiddlewareAPI<S>) => (next: Dispatch<S>): Dispatch<S> => (action: Action) => {
-    if (isSyncAction(action)) {
-        action.type = (<any>action).constructor.name
+export const asyncMiddleware: Middleware = store => next => action => {
+  if (isSyncAction(action)) {
+    action.type = action.constructor.name
 
-        if (isAsyncAction(action)) {
-            //After original dispatch lifecycle, resolve dispatch in order to handle async operations
-            setTimeout(() => {
-                (<any>action).resolve(store.dispatch)
-            })
-        }
-
-        //Fix: Actions must be plain objects.
-        let merged = mergeObject(action)
-
-        //Change state immediately and register async operations
-        return next(merged)
+    if (isAsyncAction(action)) {
+      // After original dispatch lifecycle, resolve dispatch in order to handle async operations
+      setTimeout(() => {
+        action.resolve(store.dispatch)
+      })
     }
 
-    return next(action)
+    // Fix: Actions must be plain objects.
+    const merged = mergeObject(action)
+
+    // Change state immediately and register async operations
+    return next(merged)
+  }
+
+  return next(action)
 }

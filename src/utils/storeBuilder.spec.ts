@@ -3,94 +3,91 @@ import { StoreBuilder } from './storeBuilder'
 import { expect } from 'chai'
 import 'mocha'
 
+describe('Store', () => {
+  const testAction = <Action>{ type: 'test' }
+  const reducer = (state: any = {}, action: any) => {
+    return state
+  }
+  const initState = { reducer: { test: true } }
 
-describe("Store", () => {
+  describe('with inital state', () => {
+    const store = new StoreBuilder()
+      .withInitialState(initState)
+      .withReducersMap({ reducer })
+      .build()
 
-    var TestAction = <Action>{ type: "test" }
-    var reducer = (state: any = {}, action: any) => { return state }
-    var initState = { reducer: { test: true } }
-
-    describe("with inital state", () => {
-
-        var store = new StoreBuilder()
-            .withInitialState(initState)
-            .withReducersMap({ reducer })
-            .build()
-
-        it("should have correct value", () => {
-            expect(store.getState()).equal(initState)
-        })
+    it('should have correct value', () => {
+      expect(store.getState()).equal(initState)
     })
+  })
 
+  describe('with middleware', () => {
+    let isSet = false
+    const testMiddleware = (store: any) => (next: any) => (action: any) => {
+      isSet = true
+      return this
+    }
+    const store = new StoreBuilder()
+      .withMiddleware(testMiddleware)
+      .withReducersMap({ reducer })
+      .build()
 
-    describe("with middleware", () => {
-        var isSet = false
-        var testMiddleware = (store: any) => (next: any) => (action: any) => { isSet = true; return this; }
-        var store = new StoreBuilder()
-            .withMiddleware(testMiddleware)
-            .withReducersMap({ reducer })
-            .build()
+    store.dispatch(testAction)
 
-        store.dispatch(TestAction)
-
-        it("should be called on dispatch action", () => {
-            expect(isSet).equal(true)
-        })
+    it('should be called on dispatch action', () => {
+      expect(isSet).equal(true)
     })
+  })
 
+  describe('with reducer', () => {
+    let isSet = false
+    const testReducer = (state = {}, action: Action) => {
+      if (action.type === testAction.type) {
+        isSet = true
+      }
+      return state
+    }
+    const store = new StoreBuilder().withReducer('test', testReducer).build()
 
-    describe("with reducer", () => {
-        var isSet = false
-        var testReducer = (state = {}, action: Action) => {
-            if (action.type == TestAction.type) { isSet = true }
-            return state
-        }
-        var store = new StoreBuilder()
-            .withReducer("test", testReducer)
-            .build()
+    store.dispatch(testAction)
 
-        store.dispatch(TestAction)
-
-        it("should be called on dispatch action", () => {
-            expect(isSet).equal(true)
-        })
+    it('should be called on dispatch action', () => {
+      expect(isSet).equal(true)
     })
+  })
 
+  describe('with reducer map', () => {
+    let isSet = false
+    const testReducer = (state = {}, action: Action) => {
+      if (action.type === testAction.type) {
+        isSet = true
+      }
+      return state
+    }
+    const store = new StoreBuilder().withReducersMap({ testReducer }).build()
 
-    describe("with reducer map", () => {
-        var isSet = false
-        var testReducer = (state = {}, action: Action) => {
-            if (action.type == TestAction.type) { isSet = true }
-            return state
-        }
-        var store = new StoreBuilder()
-            .withReducersMap({ testReducer })
-            .build()
+    store.dispatch(testAction)
 
-        store.dispatch(TestAction)
-
-        it("should be called on dispatch action", () => {
-            expect(isSet).equal(true)
-        })
+    it('should be called on dispatch action', () => {
+      expect(isSet).equal(true)
     })
+  })
 
+  describe('with enhancer', () => {
+    let isSet = false
+    const enhancer = (f: StoreCreator) => {
+      isSet = true
+      return f
+    }
+    const store = new StoreBuilder()
+      .withReducersMap({ reducer })
+      .withEnhancer(enhancer)
+      .build()
 
-    describe("with enhancer", () => {
-        var isSet = false
-        var enhancer = (f: StoreCreator) => {
-            isSet = true
-            return f
-        }
-        var store = new StoreBuilder()
-            .withReducersMap({ reducer })
-            .withEnhancer(enhancer)
-            .build()
+    store.dispatch(testAction)
 
-        store.dispatch(TestAction)
-
-        it("should be called on dispatch action", () => {
-            expect(isSet).equal(true)
-        })
+    it('should be called on dispatch action', () => {
+      expect(isSet).equal(true)
     })
-
+  })
 })
