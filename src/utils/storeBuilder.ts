@@ -13,20 +13,15 @@ import {
 import { asyncMiddleware } from './asyncMiddleware'
 import './browserPolyfill'
 
-const devTools: StoreEnhancer = f =>
-  (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    : f
-
-export class StoreBuilder<StoreType> {
+export class StoreBuilder<StoreType extends { [key: string]: any }> {
   private middlewares: Middleware[]
-  private reducers: ReducersMapObject
+  private reducers: ReducersMapObject<StoreType>
   private initialState: DeepPartial<StoreType>
   private enhancer: StoreEnhancer
 
   constructor() {
-    this.middlewares = []
-    this.reducers = {}
+    this.middlewares = [asyncMiddleware]
+    this.reducers = {} as StoreType
     this.initialState = {}
     this.enhancer = f => f
   }
@@ -41,7 +36,7 @@ export class StoreBuilder<StoreType> {
     return this
   }
 
-  public withReducer<K = keyof StoreType>(name: K, reducer: Reducer) {
+  public withReducer(name: string, reducer: Reducer) {
     this.reducers[name] = reducer
     return this
   }
@@ -54,17 +49,23 @@ export class StoreBuilder<StoreType> {
   }
 
   public withEnhancer(enhancer: StoreEnhancer) {
-    this.enhancer = f => enhancer(this.enhancer(f))
+    const preEnhancer = this.enhancer
+    this.enhancer = f => enhancer(preEnhancer(f))
     return this
   }
 
   public withDevTools() {
-    this.withEnhancer(devTools)
+    this.withEnhancer(
+      f =>
+        (window as any).__REDUX_DEVTOOLS_EXTENSION__
+          ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
+          : f,
+    )
     return this
   }
 
   public build(): Store<StoreType> {
-    const middlewares = applyMiddleware(...this.middlewares, asyncMiddleware)
+    const middlewares = applyMiddleware(...this.middlewares)
     const reducers = combineReducers<StoreType>(this.reducers)
     const composer = compose(middlewares, this.enhancer)(createStore)
     const store = composer(reducers, this.initialState)

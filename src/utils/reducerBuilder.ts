@@ -1,14 +1,9 @@
-import { Action } from 'redux'
-import { SyncAction, AsyncAction } from '../utils/actionHelpers'
+import { Action, Reducer } from 'redux'
+import { SyncAction } from '../utils/actionHelpers'
 
 export interface IAction<T extends Action> {
   prototype: T
 }
-
-export type Reducer<State, ActionType extends SyncAction> = (
-  state: State,
-  action: ActionType,
-) => State
 
 export class ReducerBuilder<State> {
   private actions: { [type: string]: Reducer<State, SyncAction> } = {}
@@ -20,10 +15,10 @@ export class ReducerBuilder<State> {
   }
 
   public handle<T extends SyncAction>(
-    actionType: IAction<T>,
-    actionBody: Reducer<State, T>,
+    type: IAction<T>,
+    action: Reducer<State, T>,
   ) {
-    this.actions[(<any>actionType).name] = actionBody
+    this.actions[(<any>type).name] = action
     return this
   }
 
