@@ -1,9 +1,9 @@
 language: node_js
 node_js:
-  - "4"
-  - "5"
+  - "node"
+  - "lts/*"
 script:
-  - npm run prepublish
+  - yarn prepublish
 branches:
   only:
     - master
