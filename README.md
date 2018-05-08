@@ -1,11 +1,13 @@
-react-ts
-=============
+# redux-ts
 
 Utils to define react redux reducer/action in typescript.
 
-[![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts) 
+[![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts)
 [![npm version](https://img.shields.io/npm/v/redux-ts.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
 
+### FOR v 2.X PLEASE GO TO [THE 2.x BRANCH](https://github.com/ReactiveX/rxjs/tree/2.x)
+
+> For breaking changes you can take look [CHANGELOG](./CHANGELOG.md)
 
 ```js
 npm install --save redux-ts
@@ -15,120 +17,100 @@ npm install --save redux-ts
 
 Create redux store with builder pattern.
 
-```js
+```ts
 import { StoreBuilder } from 'redux-ts'
 
-var store: Redux.Store<StoreState> = new StoreBuilder<StoreState>()
-                                            .withInitialState({test:true})
-                                            .withReducer("reducer", reducer)
-                                            .build();
-} 
-```
-
-> To enable *chrome redux tool*; first declare a const then register within *StoreBuilder*
-
-```js
-const devTool = (f: Redux.StoreCreator) => {
-    return ((window as any).__REDUX_DEVTOOLS_EXTENSION__) ? (window as any).__REDUX_DEVTOOLS_EXTENSION__ : f
+const store = new StoreBuilder<StoreState>()
+                        .withInitialState({test:true})
+                        .withReducer("reducer", reducer)
+                        .withDevTools() // enable chrome devtools
+                        .build();
 }
-
-var store = new StoreBuilder<StoreState>()
-                    .withEnhancer(devTool)
-                    .build();
 ```
-
 
 ## Actions
 
-Actions store data that are required on reducers. Declaration of them are succeed by their class name so no need to define type again. Depend on need, action could be either sync or async (like [redux-thunk](https://github.com/gaearon/redux-thunk)).
+Actions store data that are required on reducers. Declaration of them are succeed by their `class name` so no need to define type again.
 
-```js
-import { SyncAction, AsyncAction } from 'redux-ts'
-import { push } from 'react-router-redux'
+> Uglify operation will scramble function names so you need to either configure to keep function names as is ([#1](https://github.com/cimdalli/redux-ts/issues/1)) or specify unique names with `type` property.
 
+```ts
+import { SyncAction } from 'redux-ts'
 
-export class Login extends AsyncAction {
-    constructor(public username: string, public password: string) {
-        super();
-    }
+export class Login extends SyncAction {
+  constructor(public username: string, public password: string) {
+    super()
+  }
 }
 
-export class Logout extends AsyncAction { }
-
+export class Logout extends SyncAction {
+  type = 'Unique Type Name'
+}
 
 export class SetToken extends SyncAction {
-    constructor(public token: string) {
-        super();
-    }
-    getTokenKey() {
-        return "auth";
-    }
+  constructor(public token: string) {
+    super()
+  }
+  getTokenKey() {
+    return 'auth'
+  }
 }
 ```
 
 ## Reducers
 
-Unlike original redux implementation, reducers can consume both sync and async actions. Each reducer method should return a value even it doesnt change state. Async operations are stored on async actions and will be resolved after original dispatch cycle is finised.
+Reducers are consumers for actions to change application state. Difference from original redux implementation is in `redux-ts` reducers can also dispatch another action asynchronously. Each reducer method should return a value even it doesn't change state. Async dispatch operations will be handled after original dispatch cycle is finished.
 
-```js
+```ts
 import { ReducerBuilder } from 'redux-ts'
 import { Login, Logout, SetToken } from '../actions'
 import { push } from 'react-router-redux'
 
-
 export interface AuthState {
-    token?: string;
+  token?: string
 }
 
 export const authReducer = new ReducerBuilder<AuthState>()
-    .init({})
+  .init({})
 
-    .handle(Login, (state, action) => {
-        
-	    action.then(dispatch => {
-	        fetch(`https://httpbin.org/get?username=${action.username}&password=${action.password}`)
-	            .then(x => x.json())
-	            .then(data => {
-	                dispatch(new SetToken(data.args.username + "|" + data.args.password));
-	                dispatch(push("/dashboard"))
-	            });
-	    });
+  .handle(Login, (state, action, dispatch) => {
+    fetch`https://httpbin.org/get?username=${action.username}&password=${action.password}`)
+      .then(x => x.json())
+      .then(data => {
+        dispatch(new SetToken(data.args.username + '|' + data.args.password))
+        dispatch(push('/dashboard'))
+      })
 
-        return state;
-    })
+    return state
+  })
 
+  .handle(Logout, (state, action, dispatch) => {
+    dispatch(new SetToken(undefined))
+    dispatch(push('/dashboard'))
 
-    .handle(Logout, (state, action) => {
+    return state
+  })
 
-        action.then(dispatch => {
-            dispatch(new SetToken(null));
-            dispatch(push("/dashboard"));
-        });
+  .handle(SetToken, (state, action) => {
+    const token = action.token
+    const key = action.getTokenKey()
 
-        return state;
-    })
+    if (token) {
+      localStorage.setItem(key, token)
+    } else {
+      localStorage.removeItem(key)
+    }
 
-
-    .handle(SetToken, (state, action) => {
-
-        if (action.token != null) {
-            localStorage.setItem(action.getTokenKey(), action.token);
-        }
-        else {
-            localStorage.removeItem(action.getTokenKey());
-        }
-
-        return Object.assign({}, state, {
-            token: action.token
-        });
-    })
-
-
-    .build();
+    return {
+      ...state,
+      token,
+    }
+  })
 ```
 
 ## Example
-[react-material-demo](https://github.com/cimdalli/react-material-demo)
+
+[react-material-demo](https://github.com/cimdalli/react-material-demo)  (obsolete)
 
 ## License
 

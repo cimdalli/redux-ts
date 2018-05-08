@@ -46,26 +46,65 @@ export class StoreBuilder<StoreType extends { [key: string]: any }> {
     this.enhancer = f => f
   }
 
-  public withMiddleware(middleware: Middleware) {
-    this.middlewares.push(middleware)
+  /**
+   * Register given middlewares.
+   *
+   * _Execution order will be same as registration order._
+   *
+   * @param {Middleware} middleware
+   * @returns
+   * @memberof StoreBuilder
+   */
+  public withMiddleware(...middleware: Middleware[]) {
+    this.middlewares.push(...middleware)
     return this
   }
 
+  /**
+   * Initial value of store state
+   *
+   * @param {DeepPartial<StoreType>} state
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withInitialState(state: DeepPartial<StoreType>) {
     this.initialState = state
     return this
   }
 
+  /**
+   * Register pure redux reducer with given name
+   *
+   * @param {string} name Name of the reducer. _(should be same as store field name)_
+   * @param {Reducer} reducer Reducer instance
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withReducer(name: string, reducer: Reducer) {
     this.reducers[name] = reducer
     return this
   }
 
+  /**
+   * Register *ReducerBuilder* instance
+   *
+   * @param {string} name Name of the reducer. _(should be same as store field name)_
+   * @param {ReducerBuilder} reducerBuilder ReducerBuilder instance
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withReducerBuilder(name: string, reducerBuilder: ReducerBuilder) {
     this.reducerBuilders[name] = reducerBuilder
     return this
   }
 
+  /**
+   * Register list of pure reducer functions with given name
+   *
+   * @param {ReducersMapObject} reducers List of reducers
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withReducersMap(reducers: ReducersMapObject) {
     this.reducers = {
       ...(this.reducers as any),
@@ -74,6 +113,13 @@ export class StoreBuilder<StoreType extends { [key: string]: any }> {
     return this
   }
 
+  /**
+   * Register list of ReducerBuilder objects with given name
+   *
+   * @param {ReducerBuilderMap} reducerBuilders List of ReducerBuilder objects
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withReducerBuildersMap(reducerBuilders: ReducerBuilderMap) {
     this.reducerBuilders = {
       ...this.reducerBuilders,
@@ -82,17 +128,38 @@ export class StoreBuilder<StoreType extends { [key: string]: any }> {
     return this
   }
 
+  /**
+   * Register given enhancer
+   *
+   * _Execution order will be same as registration order._
+   *
+   * @param {StoreEnhancer} enhancer
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withEnhancer(enhancer: StoreEnhancer) {
     const preEnhancer = this.enhancer
     this.enhancer = f => enhancer(preEnhancer(f))
     return this
   }
 
+  /**
+   * Enable chrome devtools
+   *
+   * @returns
+   * @memberof StoreBuilder
+   */
   public withDevTools() {
     this.withEnhancer(devTool)
     return this
   }
 
+  /**
+   * Build an instance of store with configured values.
+   * 
+   * @returns {Store<StoreType>} 
+   * @memberof StoreBuilder
+   */
   public build(): Store<StoreType> {
     const defer = Promise.defer<Dispatch<SyncAction>>()
     const reducerMap = Object.keys(this.reducerBuilders).reduce(
