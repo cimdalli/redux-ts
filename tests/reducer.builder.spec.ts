@@ -6,13 +6,18 @@ import { SyncAction, ReducerBuilder, StoreBuilder } from '../src'
 interface SampleState {
   isSyncActionCalled: boolean
   isAsyncActionCalled?: boolean
+  testValue?: string
 }
 
 interface SampleStore {
   reducer: SampleState
 }
 
-class SampleSyncAction extends SyncAction {}
+class SampleSyncAction extends SyncAction {
+  constructor(public value: string) {
+    super()
+  }
+}
 
 class SampleAsyncAction extends SyncAction {}
 
@@ -43,7 +48,7 @@ describe('Reducer', () => {
       .withReducerBuilder('reducer', reducer)
       .build()
 
-    store.dispatch(new SampleSyncAction())
+    store.dispatch(new SampleSyncAction('test1'))
 
     it('should be called on dispatch sync action', () => {
       expect(store.getState().reducer.isSyncActionCalled).equal(true)
@@ -52,6 +57,7 @@ describe('Reducer', () => {
 
   describe('with async action handler', () => {
     const dispatchedEvents: any[] = []
+    const testValue = 'test'
     let store: Store<SampleStore>
 
     before(done => {
@@ -61,12 +67,12 @@ describe('Reducer', () => {
           isAsyncActionCalled: false,
         })
         .handle(SampleAsyncAction, (state, action, dispatch) => {
-          dispatch(new SampleSyncAction())
+          dispatch(new SampleSyncAction(testValue))
           return { ...state, isAsyncActionCalled: true }
         })
         .handle(SampleSyncAction, (state, action) => {
           setTimeout(done)
-          return { ...state, isSyncActionCalled: true }
+          return { ...state, isSyncActionCalled: true, testValue: action.value }
         })
 
       store = new StoreBuilder<SampleStore>()
@@ -95,6 +101,10 @@ describe('Reducer', () => {
 
     it('should handle async action', () => {
       expect(store.getState().reducer.isAsyncActionCalled).equal(true)
+    })
+
+    it('should pass correct parameter value', () => {
+      expect(store.getState().reducer.testValue).equal(testValue)
     })
   })
 })

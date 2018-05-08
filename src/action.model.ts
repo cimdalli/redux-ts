@@ -22,6 +22,6 @@ export interface ActionClass<T extends SyncAction> {
 
 export type ActionBody<S, A extends SyncAction> = (
   state: S,
-  action: Action,
+  action: A,
   dispatch: <D extends SyncAction>(action: D) => Promise<D>,
 ) => S
