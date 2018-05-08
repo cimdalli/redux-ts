@@ -1,7 +1,7 @@
-import { Action, StoreCreator } from 'redux'
-import { StoreBuilder } from './storeBuilder'
-import { expect } from 'chai'
 import 'mocha'
+import { expect } from 'chai'
+import { Action, StoreCreator, Middleware } from 'redux'
+import { StoreBuilder } from '../src'
 
 describe('Store', () => {
   const testAction = <Action>{ type: 'test' }
@@ -23,9 +23,9 @@ describe('Store', () => {
 
   describe('with middleware', () => {
     let isSet = false
-    const testMiddleware = (store: any) => (next: any) => (action: any) => {
+    const testMiddleware: Middleware = store => next => action => {
       isSet = true
-      return this
+      return next(action)
     }
     const store = new StoreBuilder()
       .withMiddleware(testMiddleware)

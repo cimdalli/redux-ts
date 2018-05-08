@@ -1,3 +1,5 @@
-export * from './utils/actionHelpers'
-export * from './utils/reducerBuilder'
-export * from './utils/storeBuilder'
+import './polyfills/object.polyfill'
+import './polyfills/promise.polyfill'
+export * from './action.model'
+export * from './reducer.builder'
+export * from './store.builder'

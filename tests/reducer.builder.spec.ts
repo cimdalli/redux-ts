@@ -1,9 +1,7 @@
-import { Action, Store, Reducer } from 'redux'
-import { SyncAction, AsyncAction } from './actionHelpers'
-import { ReducerBuilder } from './reducerBuilder'
-import { StoreBuilder } from './storeBuilder'
-import { expect } from 'chai'
 import 'mocha'
+import { expect } from 'chai'
+import { Store, Reducer } from 'redux'
+import { SyncAction, ReducerBuilder, StoreBuilder } from '../src'
 
 interface SampleState {
   isSyncActionCalled: boolean
@@ -16,16 +14,16 @@ interface SampleStore {
 
 class SampleSyncAction extends SyncAction {}
 
-class SampleAsyncAction extends AsyncAction {}
+class SampleAsyncAction extends SyncAction {}
 
 describe('Reducer', () => {
-  describe('with inital state', () => {
-    const reducer = new ReducerBuilder<SampleState>()
-      .init({ isSyncActionCalled: true })
-      .build()
+  describe('with initial state', () => {
+    const reducer = new ReducerBuilder<SampleState>().init({
+      isSyncActionCalled: true,
+    })
 
     const store = new StoreBuilder<SampleStore>()
-      .withReducersMap({ reducer })
+      .withReducerBuildersMap({ reducer })
       .build()
 
     it('should have correct value', () => {
@@ -40,10 +38,9 @@ describe('Reducer', () => {
         state.isSyncActionCalled = true
         return state
       })
-      .build()
 
     const store = new StoreBuilder<SampleStore>()
-      .withReducersMap({ reducer })
+      .withReducerBuilder('reducer', reducer)
       .build()
 
     store.dispatch(new SampleSyncAction())
@@ -56,14 +53,6 @@ describe('Reducer', () => {
   describe('with async action handler', () => {
     const dispatchedEvents: any[] = []
     let store: Store<SampleStore>
-    let beforeDispatch = false
-
-    const hookReducer: Reducer<any> = (state: any = {}, action: Action) => {
-      if (!action.type.startsWith('@@')) {
-        dispatchedEvents.push(action.type)
-      }
-      return state
-    }
 
     before(done => {
       const reducer = new ReducerBuilder<SampleState>()
@@ -71,27 +60,26 @@ describe('Reducer', () => {
           isSyncActionCalled: false,
           isAsyncActionCalled: false,
         })
-        .handle(SampleAsyncAction, (state, action) => {
-          action.then(dispatch => {
-            dispatch(new SampleSyncAction())
-          })
-          return Object.assign({}, state, { isAsyncActionCalled: true })
+        .handle(SampleAsyncAction, (state, action, dispatch) => {
+          dispatch(new SampleSyncAction())
+          return { ...state, isAsyncActionCalled: true }
         })
         .handle(SampleSyncAction, (state, action) => {
-          return Object.assign({}, state, { isSyncActionCalled: true })
+          setTimeout(done)
+          return { ...state, isSyncActionCalled: true }
         })
-        .build()
 
       store = new StoreBuilder<SampleStore>()
-        .withReducersMap({ hookReducer, reducer })
+        .withMiddleware(m => next => a => {
+          if (!a.type.startsWith('@@')) {
+            dispatchedEvents.push(a.type)
+          }
+          return next(a)
+        })
+        .withReducerBuildersMap({ reducer })
         .build()
 
-      const asyncAction = new SampleAsyncAction()
-      asyncAction.then(x => {
-        beforeDispatch = true
-        done()
-      })
-      store.dispatch(asyncAction)
+      store.dispatch(new SampleAsyncAction())
     })
 
     it('should dispatch actions in correct order', () => {
@@ -107,10 +95,6 @@ describe('Reducer', () => {
 
     it('should handle async action', () => {
       expect(store.getState().reducer.isAsyncActionCalled).equal(true)
-    })
-
-    it('should handle before dispatch promise', () => {
-      expect(beforeDispatch).equal(true)
     })
   })
 })
