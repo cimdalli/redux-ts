@@ -5,7 +5,7 @@ Utils to define react redux reducer/action in typescript.
 [![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts)
 [![npm version](https://img.shields.io/npm/v/redux-ts.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
 
-### FOR v 2.X PLEASE GO TO [THE 2.x BRANCH](https://github.com/ReactiveX/rxjs/tree/2.x)
+### FOR v 2.X PLEASE GO TO [THE 2.x BRANCH](https://github.com/cimdalli/redux-ts/tree/2.x)
 
 > For breaking changes you can take look [CHANGELOG](./CHANGELOG.md)
 
