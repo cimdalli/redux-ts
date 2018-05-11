@@ -1,11 +1,11 @@
 import 'mocha'
 import { expect } from 'chai'
 import { Store, Reducer } from 'redux'
-import { SyncAction, ReducerBuilder, StoreBuilder } from '../src'
+import { ReducerBuilder, StoreBuilder, createAction } from '../src'
 
 interface SampleState {
-  isSyncActionCalled: boolean
-  isAsyncActionCalled?: boolean
+  isFirstActionCalled: boolean
+  isSecondActionCalled?: boolean
   testValue?: string
 }
 
@@ -13,18 +13,13 @@ interface SampleStore {
   reducer: SampleState
 }
 
-class SampleSyncAction extends SyncAction {
-  constructor(public value: string) {
-    super()
-  }
-}
-
-class SampleAsyncAction extends SyncAction {}
+const FIRST_ACTION = createAction('first')
+const SECOND_ACTION = createAction<{ value: string }>('second')
 
 describe('Reducer', () => {
   describe('with initial state', () => {
     const reducer = new ReducerBuilder<SampleState>().init({
-      isSyncActionCalled: true,
+      isFirstActionCalled: true,
     })
 
     const store = new StoreBuilder<SampleStore>()
@@ -32,15 +27,15 @@ describe('Reducer', () => {
       .build()
 
     it('should have correct value', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+      expect(store.getState().reducer.isFirstActionCalled).equal(true)
     })
   })
 
-  describe('with sync action handler', () => {
+  describe('with simple action handler', () => {
     const reducer = new ReducerBuilder<SampleState>()
-      .init({ isSyncActionCalled: false })
-      .handle(SampleSyncAction, (state, action) => {
-        state.isSyncActionCalled = true
+      .init({ isFirstActionCalled: false })
+      .handle(SECOND_ACTION, (state, action) => {
+        state.isFirstActionCalled = true
         return state
       })
 
@@ -48,14 +43,14 @@ describe('Reducer', () => {
       .withReducerBuilder('reducer', reducer)
       .build()
 
-    store.dispatch(new SampleSyncAction('test1'))
+    store.dispatch(SECOND_ACTION({ value: 'test1' }))
 
-    it('should be called on dispatch sync action', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+    it('should be called on dispatch action', () => {
+      expect(store.getState().reducer.isFirstActionCalled).equal(true)
     })
   })
 
-  describe('with async action handler', () => {
+  describe('with complex action handler', () => {
     const dispatchedEvents: any[] = []
     const testValue = 'test'
     let store: Store<SampleStore>
@@ -63,16 +58,20 @@ describe('Reducer', () => {
     before(done => {
       const reducer = new ReducerBuilder<SampleState>()
         .init({
-          isSyncActionCalled: false,
-          isAsyncActionCalled: false,
+          isFirstActionCalled: false,
+          isSecondActionCalled: false,
         })
-        .handle(SampleAsyncAction, (state, action, dispatch) => {
-          dispatch(new SampleSyncAction(testValue))
-          return { ...state, isAsyncActionCalled: true }
+        .handle(FIRST_ACTION, (state, action, dispatch) => {
+          dispatch(SECOND_ACTION({ value: testValue }))
+          return { ...state, isSecondActionCalled: true }
         })
-        .handle(SampleSyncAction, (state, action) => {
+        .handle(SECOND_ACTION, (state, action) => {
           setTimeout(done)
-          return { ...state, isSyncActionCalled: true, testValue: action.value }
+          return {
+            ...state,
+            isFirstActionCalled: true,
+            testValue: action.payload.value,
+          }
         })
 
       store = new StoreBuilder<SampleStore>()
@@ -85,22 +84,22 @@ describe('Reducer', () => {
         .withReducerBuildersMap({ reducer })
         .build()
 
-      store.dispatch(new SampleAsyncAction())
+      store.dispatch(FIRST_ACTION())
     })
 
     it('should dispatch actions in correct order', () => {
       expect(dispatchedEvents).deep.equal([
-        (<any>SampleAsyncAction).name,
-        (<any>SampleSyncAction).name,
+        FIRST_ACTION.type,
+        SECOND_ACTION.type,
       ])
     })
 
-    it('should handle sync action', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+    it('should handle first action', () => {
+      expect(store.getState().reducer.isFirstActionCalled).equal(true)
     })
 
-    it('should handle async action', () => {
-      expect(store.getState().reducer.isAsyncActionCalled).equal(true)
+    it('should handle second action', () => {
+      expect(store.getState().reducer.isSecondActionCalled).equal(true)
     })
 
     it('should pass correct parameter value', () => {

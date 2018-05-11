@@ -1,5 +1,5 @@
-import { ActionBody, ActionClass } from '.'
-import { Action, Dispatch, Reducer } from 'redux'
+import { ActionBody, Action, ActionCreatorDefinition } from '.'
+import { Dispatch, Reducer } from 'redux'
 
 export class ReducerBuilder<State = {}> {
   private actions: { [type: string]: ActionBody<State, Action> } = {}
@@ -20,17 +20,17 @@ export class ReducerBuilder<State = {}> {
   /**
    * Consumer definition for given action type
    *
-   * @template T Action type
-   * @param {ActionClass<T>} type Action object (should be class)
-   * @param {ActionBody<State, T>} action Action body
+   * @template TPayload Action type
+   * @param {ActionClass<TPayload>} type Action object (should be class)
+   * @param {ActionBody<State, TPayload>} body Action body
    * @returns
    * @memberof ReducerBuilder
    */
-  public handle<T extends Action>(
-    type: ActionClass<T>,
-    action: ActionBody<State, T>,
+  public handle<TPayload>(
+    creator: ActionCreatorDefinition<TPayload>,
+    body: ActionBody<State, Action<TPayload>>,
   ) {
-    this.actions[(<any>type).name] = action
+    this.actions[creator.type] = body
     return this
   }
 

@@ -1,27 +1,29 @@
-import { Action } from 'redux'
+import { Action as A } from 'redux'
 
-/**
- * Abstract action definition. Create a new class and extend from `SyncAction`
- *
- * Uglify operation scrambles function names with default configuration.
- * In order to prevent it, either configure as keeping function names
- * or overwrite `type` field.
- *
- * @export
- * @abstract
- * @class SyncAction
- * @implements {Action<string>}
- */
-export abstract class SyncAction implements Action<string> {
+export interface Action<TPayload = any> extends A<string> {
+  payload?: TPayload
+}
+
+export interface ActionCreatorDefinition<TPayload = any> {
   type: string
+  (payload?: TPayload): Action<TPayload>
 }
 
-export interface ActionClass<T extends SyncAction> {
-  prototype: T
+export const createAction = <TPayload>(
+  type: string,
+): ActionCreatorDefinition<TPayload> => {
+  const creator: any = (payload: TPayload): Action<TPayload> => ({
+    type,
+    payload,
+  })
+  creator.type = type
+  return creator
 }
 
-export type ActionBody<S, A extends SyncAction> = (
-  state: S,
-  action: A,
-  dispatch: <D extends SyncAction>(action: D) => Promise<D>,
-) => S
+export type ActionBody<TState, TPayload> = (
+  state: TState,
+  action: TPayload,
+  dispatch: <TDispatchAction extends Action>(
+    action: TDispatchAction,
+  ) => Promise<TDispatchAction>,
+) => TState
