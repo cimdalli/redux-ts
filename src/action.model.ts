@@ -1,4 +1,4 @@
-import { Action } from 'redux'
+import { Action as A, AnyAction } from 'redux'
 
 /**
  * Abstract action definition. Create a new class and extend from `SyncAction`
@@ -12,16 +12,24 @@ import { Action } from 'redux'
  * @class SyncAction
  * @implements {Action<string>}
  */
-export abstract class SyncAction implements Action<string> {
-  type: string
+// export abstract class Action implements A<string> {
+//   type: string
+// }
+
+// tslint:disable-next-line:function-name
+export function Action(
+  type: string,
+): (<T extends {}>(target: T) => T & { type: string }) {
+  return target => Object.assign(target, { type })
 }
 
-export interface ActionClass<T extends SyncAction> {
+export interface ActionClass<T> {
   prototype: T
+  type?: string
 }
 
-export type ActionBody<S, A extends SyncAction> = (
+export type ActionBody<S, A> = (
   state: S,
   action: A,
-  dispatch: <D extends SyncAction>(action: D) => Promise<D>,
+  dispatch: <D>(action: D) => Promise<D>,
 ) => S

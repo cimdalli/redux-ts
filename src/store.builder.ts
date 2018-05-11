@@ -11,7 +11,7 @@ import {
   createStore,
   Reducer,
 } from 'redux'
-import { ReducerBuilder, SyncAction } from '.'
+import { ReducerBuilder } from '.'
 
 const devTool: StoreEnhancer = f =>
   (window as any).__REDUX_DEVTOOLS_EXTENSION__
@@ -19,7 +19,7 @@ const devTool: StoreEnhancer = f =>
     : f
 
 const plainObjMiddleware: Middleware = store => next => action => {
-  action.type = action.type || action.constructor.name
+  action.type = action.type || action.constructor.type
   const plain: any = {}
   for (const key in action) {
     plain[key] = action[key]
@@ -33,7 +33,7 @@ export interface ReducerBuilderMap {
 
 export class StoreBuilder<StoreType extends { [key: string]: any }> {
   private middlewares: Middleware[]
-  private reducers: ReducersMapObject<StoreType>
+  private reducers: ReducersMapObject<StoreType, any>
   private reducerBuilders: ReducerBuilderMap
   private initialState: DeepPartial<StoreType>
   private enhancer: StoreEnhancer
@@ -156,12 +156,12 @@ export class StoreBuilder<StoreType extends { [key: string]: any }> {
 
   /**
    * Build an instance of store with configured values.
-   * 
-   * @returns {Store<StoreType>} 
+   *
+   * @returns {Store<StoreType>}
    * @memberof StoreBuilder
    */
-  public build(): Store<StoreType> {
-    const defer = Promise.defer<Dispatch<SyncAction>>()
+  public build(): Store<StoreType, any> {
+    const defer = Promise.defer<Dispatch<any>>()
     const reducerMap = Object.keys(this.reducerBuilders).reduce(
       (p: any, r) => ({
         ...p,
@@ -170,7 +170,7 @@ export class StoreBuilder<StoreType extends { [key: string]: any }> {
       this.reducers,
     )
     const middlewares = applyMiddleware(...this.middlewares)
-    const reducers = combineReducers<StoreType>(reducerMap)
+    const reducers = combineReducers<StoreType, any>(reducerMap)
     const composer = compose(middlewares, this.enhancer)(createStore)
     const store = composer(reducers, this.initialState)
 

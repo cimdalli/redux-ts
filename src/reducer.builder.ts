@@ -1,8 +1,8 @@
 import { ActionBody, ActionClass } from '.'
-import { Action, Dispatch, Reducer } from 'redux'
+import { Action, Dispatch, Reducer, AnyAction } from 'redux'
 
 export class ReducerBuilder<State = {}> {
-  private actions: { [type: string]: ActionBody<State, Action> } = {}
+  private actions: { [type: string]: ActionBody<State, any> } = {}
   private initState: State
 
   /**
@@ -21,26 +21,27 @@ export class ReducerBuilder<State = {}> {
    * Consumer definition for given action type
    *
    * @template T Action type
-   * @param {ActionClass<T>} type Action object (should be class)
-   * @param {ActionBody<State, T>} action Action body
+   * @param {ActionClass<T>} action Action object (should be class)
+   * @param {ActionBody<State, T>} body Action body
    * @returns
    * @memberof ReducerBuilder
    */
-  public handle<T extends Action>(
-    type: ActionClass<T>,
-    action: ActionBody<State, T>,
+  public handle<T extends {}>(
+    action: ActionClass<T>,
+    body: ActionBody<State, T>,
   ) {
-    this.actions[(<any>type).name] = action
+    if (!action.type) {
+      throw new Error('Actions should have unique `type` information.')
+    }
+    this.actions[action.type] = body
     return this
   }
 
   private build(dispatch: Promise<Dispatch>): Reducer<State, Action> {
     return (state = this.initState, action) => {
-      const type = action.type
-      const actionBody = this.actions[type]
-
+      const actionBody = this.actions[action.type]
       if (!!actionBody) {
-        return actionBody(state, action, a => dispatch.then(d => d(a)))
+        return actionBody(state, action, a => dispatch.then(d => d(a as any)))
       }
 
       return state

@@ -1,11 +1,11 @@
 import 'mocha'
 import { expect } from 'chai'
-import { Store, Reducer } from 'redux'
-import { SyncAction, ReducerBuilder, StoreBuilder } from '../src'
+import { Store } from 'redux'
+import { ReducerBuilder, StoreBuilder, Action } from '../src'
 
 interface SampleState {
-  isSyncActionCalled: boolean
-  isAsyncActionCalled?: boolean
+  isSimpleActionCalled?: boolean
+  isNestedActionCalled?: boolean
   testValue?: string
 }
 
@@ -13,18 +13,20 @@ interface SampleStore {
   reducer: SampleState
 }
 
-class SampleSyncAction extends SyncAction {
-  constructor(public value: string) {
-    super()
-  }
-}
+@Action('SIMPLE_ACTION')
+class SimpleAction {}
 
-class SampleAsyncAction extends SyncAction {}
+@Action('NESTED_ACTION')
+class NestedAction {
+  constructor(public value: string) {}
+}
 
 describe('Reducer', () => {
   describe('with initial state', () => {
+    const testValue = 'test'
+
     const reducer = new ReducerBuilder<SampleState>().init({
-      isSyncActionCalled: true,
+      testValue,
     })
 
     const store = new StoreBuilder<SampleStore>()
@@ -32,47 +34,53 @@ describe('Reducer', () => {
       .build()
 
     it('should have correct value', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+      expect(store.getState().reducer.testValue).equal(testValue)
     })
   })
 
-  describe('with sync action handler', () => {
+  describe('with simple action handler', () => {
     const reducer = new ReducerBuilder<SampleState>()
-      .init({ isSyncActionCalled: false })
-      .handle(SampleSyncAction, (state, action) => {
-        state.isSyncActionCalled = true
-        return state
+      .init({ isSimpleActionCalled: false })
+      .handle(SimpleAction, (state, action) => {
+        return {
+          ...state,
+          isSimpleActionCalled: true,
+        }
       })
 
     const store = new StoreBuilder<SampleStore>()
       .withReducerBuilder('reducer', reducer)
       .build()
 
-    store.dispatch(new SampleSyncAction('test1'))
+    store.dispatch(new SimpleAction())
 
     it('should be called on dispatch sync action', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+      expect(store.getState().reducer.isSimpleActionCalled).equal(true)
     })
   })
 
   describe('with async action handler', () => {
     const dispatchedEvents: any[] = []
     const testValue = 'test'
-    let store: Store<SampleStore>
+    let store: Store<SampleStore, any>
 
     before(done => {
       const reducer = new ReducerBuilder<SampleState>()
         .init({
-          isSyncActionCalled: false,
-          isAsyncActionCalled: false,
+          isNestedActionCalled: false,
+          isSimpleActionCalled: false,
         })
-        .handle(SampleAsyncAction, (state, action, dispatch) => {
-          dispatch(new SampleSyncAction(testValue))
-          return { ...state, isAsyncActionCalled: true }
+        .handle(SimpleAction, (state, action, dispatch) => {
+          dispatch(new NestedAction(testValue))
+          return { ...state, isSimpleActionCalled: true }
         })
-        .handle(SampleSyncAction, (state, action) => {
+        .handle(NestedAction, (state, action) => {
           setTimeout(done)
-          return { ...state, isSyncActionCalled: true, testValue: action.value }
+          return {
+            ...state,
+            isNestedActionCalled: true,
+            testValue: action.value,
+          }
         })
 
       store = new StoreBuilder<SampleStore>()
@@ -85,22 +93,22 @@ describe('Reducer', () => {
         .withReducerBuildersMap({ reducer })
         .build()
 
-      store.dispatch(new SampleAsyncAction())
+      store.dispatch(new SimpleAction())
     })
 
     it('should dispatch actions in correct order', () => {
       expect(dispatchedEvents).deep.equal([
-        (<any>SampleAsyncAction).name,
-        (<any>SampleSyncAction).name,
+        (<any>SimpleAction).type,
+        (<any>NestedAction).type,
       ])
     })
 
-    it('should handle sync action', () => {
-      expect(store.getState().reducer.isSyncActionCalled).equal(true)
+    it('should handle simple action', () => {
+      expect(store.getState().reducer.isNestedActionCalled).equal(true)
     })
 
-    it('should handle async action', () => {
-      expect(store.getState().reducer.isAsyncActionCalled).equal(true)
+    it('should handle nested action', () => {
+      expect(store.getState().reducer.isSimpleActionCalled).equal(true)
     })
 
     it('should pass correct parameter value', () => {
