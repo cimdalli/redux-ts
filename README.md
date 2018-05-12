@@ -1,11 +1,13 @@
 # redux-ts
 
-Utils to define react redux reducer/action in typescript.
+Utils to define react redux reducer/action in typescript.</p>
 
 [![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts)
+[![dependencies Status](https://david-dm.org/cimdalli/redux-ts/status.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
+[![devDependencies Status](https://david-dm.org/cimdalli/redux-ts/dev-status.svg?style=flat-square)](https://david-dm.org/cimdalli/redux-ts?type=dev)
 [![npm version](https://img.shields.io/npm/v/redux-ts.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
 
-### FOR v 2.X PLEASE GO TO [THE 2.x BRANCH](https://github.com/cimdalli/redux-ts/tree/2.x)
+<h5 align="right">  Now FSA compliant</h5>
 
 > For breaking changes you can take look [CHANGELOG](./CHANGELOG.md)
 
@@ -30,54 +32,57 @@ const store = new StoreBuilder<StoreState>()
 
 ## Actions
 
-Actions store data that are required on reducers. Declaration of them are succeed by their `class name` so no need to define type again.
-
-> Uglify operation will scramble function names so you need to either configure to keep function names as is ([#1](https://github.com/cimdalli/redux-ts/issues/1)) or specify unique names with `type` property.
+Action declaration can be done with `'createAction'` function which takes action `type` as parameter.
 
 ```ts
-import { SyncAction } from 'redux-ts'
+import { createAction } from 'redux-ts'
 
-export class Login extends SyncAction {
-  constructor(public username: string, public password: string) {
-    super()
-  }
+interface LoginPayload {
+  username: string
+  password: string
 }
 
-export class Logout extends SyncAction {
-  type = 'Unique Type Name'
+interface SetTokenPayload {
+  token?: string
 }
 
-export class SetToken extends SyncAction {
-  constructor(public token: string) {
-    super()
-  }
-  getTokenKey() {
-    return 'auth'
-  }
-}
+export const Login = createAction<LoginPayload>('Login')
+
+export const Logout = createAction('Logout')
+
+export const SetToken = createAction<SetTokenPayload>('SetToken')
 ```
 
 ## Reducers
 
-Reducers are consumers for actions to change application state. Difference from original redux implementation is in `redux-ts` reducers can also dispatch another action asynchronously. Each reducer method should return a value even it doesn't change state. Async dispatch operations will be handled after original dispatch cycle is finished.
+Reducers are consumers for actions to change application state. Difference from original redux implementation is in `redux-ts` reducers can also dispatch another action asynchronously. Each reducer method should return state value even it doesn't change it. Async dispatch operations will be handled after original dispatch cycle is finished.
 
 ```ts
 import { ReducerBuilder } from 'redux-ts'
 import { Login, Logout, SetToken } from '../actions'
 import { push } from 'react-router-redux'
 
+const tokenKey = 'auth'
+
 export interface AuthState {
   token?: string
 }
 
 export const authReducer = new ReducerBuilder<AuthState>()
-  .init({})
+  .init({
+    token: localStorage.getItem(tokenKey) || undefined,
+  })
 
   .handle(Login, (state, action, dispatch) => {
-    fetch`https://httpbin.org/get?username=${action.username}&password=${action.password}`)
+    const { username, password } = action.payload
+
+    fetch(`https://server.com/login?u=${username}&p=${password}`)
       .then(x => x.json())
       .then(data => {
-        dispatch(new SetToken(data.args.username + '|' + data.args.password))
+        /*
+        * When server respond with token, another action is dispatching.
+        */
+        dispatch(SetToken(data.token))
         dispatch(push('/dashboard'))
       })
 
@@ -85,7 +90,7 @@ export const authReducer = new ReducerBuilder<AuthState>()
   })
 
   .handle(Logout, (state, action, dispatch) => {
-    dispatch(new SetToken(undefined))
+    dispatch(SetToken({ token: undefined }))
     dispatch(push('/dashboard'))
 
     return state
@@ -108,9 +113,47 @@ export const authReducer = new ReducerBuilder<AuthState>()
   })
 ```
 
+## Connect
+
+`connect` method is part of redux library and allows you to connect your react components with redux store. Although you can use your own implementation, this library provides you some syntactic sugar to make it easy.
+
+```tsx
+import * as React from 'react'
+
+import { ChangeTheme } from '../actions/layout.actions'
+import { Logout } from '../actions/auth.actions'
+
+import { TopBar } from '../components/topBar'
+import { connect } from 'react-redux'
+import { mapDispatchToProps, StateToProps } from 'redux-ts'
+
+const mapStoreToProps: StateToProps<StoreState> = map => map
+
+const storeProps = mapStoreToProps(store => ({
+  useDarkTheme: !!store.layout.useDarkTheme,
+}))
+
+const dispatchProps = mapDispatchToProps({
+  Logout,
+  ChangeTheme,
+})
+
+type MainProps = ReturnType<typeof dispatchProps> &
+  ReturnType<typeof storeProps>
+
+const MainContainer: React.SFC<MainProps> = ({ children, ...rest }) => (
+  <div>
+    <TopBar {...rest} />
+    {children}
+  </div>
+)
+
+export const Main = connect(storeProps, dispatchProps)(MainContainer)
+```
+
 ## Example
 
-[react-material-demo](https://github.com/cimdalli/react-material-demo)  (obsolete)
+[react-material-demo](https://github.com/cimdalli/react-material-demo)
 
 ## License
 

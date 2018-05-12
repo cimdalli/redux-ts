@@ -4,7 +4,8 @@
   "jsRules": {},
   "rules": {
     "semicolon": false,
-    "ter-arrow-parens": [true, "as-needed"]
+    "ter-arrow-parens": [true, "as-needed"],
+    "variable-name": [true, "allow-pascal-case"]
   },
   "rulesDirectory": []
 }

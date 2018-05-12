@@ -1,4 +1,4 @@
-import { ActionBody, Action, ActionCreatorDefinition } from '.'
+import { ActionBody, Action, ActionCreatorDefinition, LazyDispatch } from '.'
 import { Dispatch, Reducer } from 'redux'
 
 export class ReducerBuilder<State = {}> {
@@ -20,9 +20,9 @@ export class ReducerBuilder<State = {}> {
   /**
    * Consumer definition for given action type
    *
-   * @template TPayload Action type
-   * @param {ActionClass<TPayload>} type Action object (should be class)
-   * @param {ActionBody<State, TPayload>} body Action body
+   * @template TPayload Action payload type
+   * @param {ActionCreatorDefinition<TPayload>} creator Action creator function
+   * @param {ActionBody<State, Action<TPayload>>} body Action body
    * @returns
    * @memberof ReducerBuilder
    */
@@ -34,13 +34,14 @@ export class ReducerBuilder<State = {}> {
     return this
   }
 
-  private build(dispatch: Promise<Dispatch>): Reducer<State, Action> {
+  private build(dispatchPromise: Promise<Dispatch>): Reducer<State, Action> {
     return (state = this.initState, action) => {
-      const type = action.type
-      const actionBody = this.actions[type]
+      const actionBody = this.actions[action.type]
+      const lazyDispatch: LazyDispatch = nestedAction =>
+        dispatchPromise.then(dispatch => dispatch(nestedAction))
 
       if (!!actionBody) {
-        return actionBody(state, action, a => dispatch.then(d => d(a)))
+        return actionBody(state, action, lazyDispatch)
       }
 
       return state

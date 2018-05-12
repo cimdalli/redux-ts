@@ -10,7 +10,7 @@ describe('Store', () => {
   }
   const initState = { reducer: { test: true } }
 
-  describe('with inital state', () => {
+  describe('with initial state', () => {
     const store = new StoreBuilder()
       .withInitialState(initState)
       .withReducersMap({ reducer })

@@ -3,78 +3,78 @@ import { expect } from 'chai'
 import { Store, Reducer } from 'redux'
 import { ReducerBuilder, StoreBuilder, createAction } from '../src'
 
-interface SampleState {
-  isFirstActionCalled: boolean
-  isSecondActionCalled?: boolean
+interface ReducerState {
+  isBasicActionCalled: boolean
+  isNestedActionCalled?: boolean
   testValue?: string
 }
 
-interface SampleStore {
-  reducer: SampleState
+interface StoreState {
+  reducer: ReducerState
 }
 
-const FIRST_ACTION = createAction('first')
-const SECOND_ACTION = createAction<{ value: string }>('second')
+const SimpleAction = createAction('simple')
+const NestedAction = createAction<{ value: string }>('nested')
 
 describe('Reducer', () => {
   describe('with initial state', () => {
-    const reducer = new ReducerBuilder<SampleState>().init({
-      isFirstActionCalled: true,
+    const reducer = new ReducerBuilder<ReducerState>().init({
+      isBasicActionCalled: true,
     })
 
-    const store = new StoreBuilder<SampleStore>()
+    const store = new StoreBuilder<StoreState>()
       .withReducerBuildersMap({ reducer })
       .build()
 
     it('should have correct value', () => {
-      expect(store.getState().reducer.isFirstActionCalled).equal(true)
+      expect(store.getState().reducer.isBasicActionCalled).equal(true)
     })
   })
 
   describe('with simple action handler', () => {
-    const reducer = new ReducerBuilder<SampleState>()
-      .init({ isFirstActionCalled: false })
-      .handle(SECOND_ACTION, (state, action) => {
-        state.isFirstActionCalled = true
+    const reducer = new ReducerBuilder<ReducerState>()
+      .init({ isBasicActionCalled: false })
+      .handle(NestedAction, (state, action) => {
+        state.isBasicActionCalled = true
         return state
       })
 
-    const store = new StoreBuilder<SampleStore>()
+    const store = new StoreBuilder<StoreState>()
       .withReducerBuilder('reducer', reducer)
       .build()
 
-    store.dispatch(SECOND_ACTION({ value: 'test1' }))
+    store.dispatch(NestedAction({ value: 'test1' }))
 
     it('should be called on dispatch action', () => {
-      expect(store.getState().reducer.isFirstActionCalled).equal(true)
+      expect(store.getState().reducer.isBasicActionCalled).equal(true)
     })
   })
 
-  describe('with complex action handler', () => {
+  describe('with nested action handler', () => {
     const dispatchedEvents: any[] = []
     const testValue = 'test'
-    let store: Store<SampleStore>
+    let store: Store<StoreState>
 
     before(done => {
-      const reducer = new ReducerBuilder<SampleState>()
+      const reducer = new ReducerBuilder<ReducerState>()
         .init({
-          isFirstActionCalled: false,
-          isSecondActionCalled: false,
+          isBasicActionCalled: false,
+          isNestedActionCalled: false,
         })
-        .handle(FIRST_ACTION, (state, action, dispatch) => {
-          dispatch(SECOND_ACTION({ value: testValue }))
-          return { ...state, isSecondActionCalled: true }
+        .handle(SimpleAction, (state, action, dispatch) => {
+          dispatch(NestedAction({ value: testValue }))
+          return { ...state, isNestedActionCalled: true }
         })
-        .handle(SECOND_ACTION, (state, action) => {
+        .handle(NestedAction, (state, action) => {
           setTimeout(done)
           return {
             ...state,
-            isFirstActionCalled: true,
+            isBasicActionCalled: true,
             testValue: action.payload.value,
           }
         })
 
-      store = new StoreBuilder<SampleStore>()
+      store = new StoreBuilder<StoreState>()
         .withMiddleware(m => next => a => {
           if (!a.type.startsWith('@@')) {
             dispatchedEvents.push(a.type)
@@ -84,22 +84,22 @@ describe('Reducer', () => {
         .withReducerBuildersMap({ reducer })
         .build()
 
-      store.dispatch(FIRST_ACTION())
+      store.dispatch(SimpleAction())
     })
 
     it('should dispatch actions in correct order', () => {
       expect(dispatchedEvents).deep.equal([
-        FIRST_ACTION.type,
-        SECOND_ACTION.type,
+        SimpleAction.type,
+        NestedAction.type,
       ])
     })
 
-    it('should handle first action', () => {
-      expect(store.getState().reducer.isFirstActionCalled).equal(true)
+    it('should handle simple action', () => {
+      expect(store.getState().reducer.isBasicActionCalled).equal(true)
     })
 
-    it('should handle second action', () => {
-      expect(store.getState().reducer.isSecondActionCalled).equal(true)
+    it('should handle nested action', () => {
+      expect(store.getState().reducer.isNestedActionCalled).equal(true)
     })
 
     it('should pass correct parameter value', () => {

@@ -14,9 +14,7 @@ import {
 import { ReducerBuilder, Action } from '.'
 
 const devTool: StoreEnhancer = f =>
-  (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    : f
+  (window as any).__REDUX_DEVTOOLS_EXTENSION__ || f
 
 export interface ReducerBuilderMap {
   [key: string]: ReducerBuilder

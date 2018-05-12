@@ -1,5 +1,6 @@
-import './polyfills/object.polyfill'
 import './polyfills/promise.polyfill'
-export * from './action.model'
+export * from './models/action.model'
+export * from './models/redux.model'
 export * from './reducer.builder'
 export * from './store.builder'
+export * from './helpers/redux.helpers'
