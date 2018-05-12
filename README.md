@@ -3,7 +3,7 @@
 Utils to define react redux reducer/action in typescript.</p>
 
 [![build status](https://img.shields.io/travis/cimdalli/redux-ts/master.svg?style=flat-square)](https://travis-ci.org/cimdalli/redux-ts)
-[![dependencies Status](https://david-dm.org/cimdalli/redux-ts/status.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
+[![dependencies Status](https://david-dm.org/cimdalli/redux-ts/status.svg?style=flat-square)](https://david-dm.org/cimdalli/redux-ts)
 [![devDependencies Status](https://david-dm.org/cimdalli/redux-ts/dev-status.svg?style=flat-square)](https://david-dm.org/cimdalli/redux-ts?type=dev)
 [![npm version](https://img.shields.io/npm/v/redux-ts.svg?style=flat-square)](https://www.npmjs.com/package/redux-ts)
 
