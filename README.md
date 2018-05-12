@@ -97,13 +97,12 @@ export const authReducer = new ReducerBuilder<AuthState>()
   })
 
   .handle(SetToken, (state, action) => {
-    const token = action.token
-    const key = action.getTokenKey()
+    const token = action.payload.token
 
     if (token) {
-      localStorage.setItem(key, token)
+      localStorage.setItem(tokenKey, token)
     } else {
-      localStorage.removeItem(key)
+      localStorage.removeItem(tokenKey)
     }
 
     return {
