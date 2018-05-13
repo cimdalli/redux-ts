@@ -10,7 +10,7 @@ export interface StateToProps<TState = any> {
 export interface DispatchToProps<
   TDispatchAction extends AnyAction = AnyAction
 > {
-  <T extends { [key: string]: ActionCreatorDefinition }>(map: T): (
+  <T extends { [key: string]: (...params: any[]) => AnyAction }>(map: T): (
     dispatch: Dispatch<TDispatchAction>,
   ) => T
 }

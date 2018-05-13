@@ -3,7 +3,7 @@ import { Action as ReduxAction } from 'redux'
 export interface Action<TPayload = any, TMeta = any>
   extends ReduxAction<string> {
   payload: TPayload
-  meta: TMeta
+  meta?: TMeta
 }
 
 export interface ActionCreatorDefinition<TPayload = any, TMeta = any> {
