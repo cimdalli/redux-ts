@@ -122,7 +122,6 @@ import * as React from 'react'
 import { ChangeTheme } from '../actions/layout.actions'
 import { Logout } from '../actions/auth.actions'
 
-import { TopBar } from '../components/topBar'
 import { connect } from 'react-redux'
 import { mapDispatchToProps, StateToProps } from 'redux-ts'
 
@@ -137,15 +136,28 @@ const dispatchProps = mapDispatchToProps({
   ChangeTheme,
 })
 
-type MainProps = ReturnType<typeof dispatchProps> &
-  ReturnType<typeof storeProps>
+type MainProps = ReturnType<typeof dispatchProps> & ReturnType<typeof storeProps>
 
-const MainContainer: React.SFC<MainProps> = ({ children, ...rest }) => (
-  <div>
-    <TopBar {...rest} />
-    {children}
-  </div>
-)
+const MainContainer: React.SFC<MainProps> = ({ children, useDarkTheme, Logout, ChangeTheme }) => {
+
+  const appBarRightElement = (
+    <div style={{ display: 'inline-block' }}>
+      <Toggle
+        onToggle={ChangeTheme}
+        label={useDarkTheme: 'dark' : 'light'}
+        toggled={useDarkTheme}
+      />
+      <FlatButton onClick={Logout} label="logout" />
+    </div>
+  )
+  
+  return (
+    <div>
+      <AppBar iconElementRight={appBarRightElement}/>
+      {children}
+    </div>
+  )
+}
 
 export const Main = connect(storeProps, dispatchProps)(MainContainer)
 ```
