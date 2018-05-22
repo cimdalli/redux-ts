@@ -1,11 +1,11 @@
-const webpack = require("webpack")
-const nodeExternals = require("webpack-node-externals")
+const webpack = require('webpack')
+const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   externals: [nodeExternals()],
-  entry: "./src/index.ts",
+  entry: ['./src/index.ts'],
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"]
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
     rules: [
@@ -13,25 +13,26 @@ module.exports = {
         test: /\.tsx?$/,
         use: [
           {
-            loader: "ts-loader",
+            loader: 'ts-loader',
             options: {
               compilerOptions: {
                 declaration: true,
-                sourceMap: true
-              }
-            }
-          }
-        ]
-      }
-    ]
+                sourceMap: true,
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
 
   plugins: [
+    // new CopyWebpackPlugin(['./index.js']),
     // new webpack.DefinePlugin({
     //   "process.env.NODE_ENV": JSON.stringify(env)
     // }),
     // new webpack.SourceMapDevToolPlugin({
     //   filename: "[file].map"
     // })
-  ]
+  ],
 }

@@ -9,6 +9,6 @@ module.exports = merge(common, {
     libraryTarget: 'umd',
     umdNamedDefine: true,
     globalObject: 'this',
-    filename: 'redux-ts.min.js',
+    filename: 'redux-ts.production.min.js',
   },
 })

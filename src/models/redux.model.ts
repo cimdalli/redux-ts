@@ -1,17 +1,16 @@
-import { Dispatch, AnyAction } from 'redux'
-import { ActionCreatorDefinition } from '..'
+import { AnyAction } from 'redux'
+import { MapDispatchToPropsFunction, MapStateToProps } from 'react-redux'
+
+export type Indexer<T = any> = { [key: string]: T }
 
 export interface StateToProps<TState = any> {
-  <T extends { [key: string]: any } = {}, Town = {}>(
-    map: (store: TState, own: Town) => T,
-  ): (store: TState, own: Town) => T
+  <T extends Indexer, TOwn>(
+    map: MapStateToProps<T, TOwn, TState>,
+  ): MapStateToProps<T, TOwn, TState>
 }
 
-export interface DispatchToProps<
-  TDispatchAction extends AnyAction = AnyAction
-> {
-  <T extends { [key: string]: (...params: any[]) => AnyAction }, Town>(
-    map: T,
-    own: Town,
-  ): (dispatch: Dispatch<TDispatchAction>, own: Town) => T
+export interface DispatchToProps {
+  <T extends Indexer<(...params: any[]) => AnyAction>, TOwn>(
+    map: T | MapDispatchToPropsFunction<T, TOwn>,
+  ): MapDispatchToPropsFunction<T, TOwn>
 }

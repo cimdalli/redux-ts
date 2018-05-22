@@ -2,7 +2,7 @@
   "name": "redux-ts",
   "version": "4.1.2",
   "description": "Utils to define redux reducer/action in typescript",
-  "main": "dist/redux-ts.min.js",
+  "main": "dist/redux-ts.production.min.js",
   "typings": "dist/src/index.d.ts",
   "files": [
     "*.md",
@@ -72,6 +72,6 @@
     "react": ">=15",
     "react-dom": ">=15",
     "react-redux": ">=5",
-    "redux": ">=3"
+    "redux": ">=4"
   }
 }
