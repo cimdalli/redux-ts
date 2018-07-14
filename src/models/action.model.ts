@@ -2,13 +2,13 @@ import { Action as ReduxAction } from 'redux'
 
 export interface Action<TPayload = any, TMeta = any>
   extends ReduxAction<string> {
-  payload: TPayload
+  payload?: TPayload
   meta?: TMeta
 }
 
-export interface ActionCreatorDefinition<TPayload = any, TMeta = any> {
+export interface ActionCreatorDefinition<TPayload, TMeta> {
+  (payload?: TPayload, meta?: TMeta): Action<TPayload, TMeta>
   type: string
-  (payload?: TPayload, meta?: TMeta): Action<TPayload>
 }
 
 export type LazyDispatch = <TAction extends ReduxAction>(

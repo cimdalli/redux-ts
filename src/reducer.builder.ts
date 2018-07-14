@@ -26,9 +26,9 @@ export class ReducerBuilder<State = {}> {
    * @returns
    * @memberof ReducerBuilder
    */
-  public handle<TPayload>(
-    creator: ActionCreatorDefinition<TPayload>,
-    body: ActionBody<State, Action<TPayload>>,
+  public handle<TPayload, TMeta>(
+    creator: ActionCreatorDefinition<TPayload, TMeta>,
+    body: ActionBody<State, Action<TPayload, TMeta>>,
   ) {
     this.actions[creator.type] = body
     return this
