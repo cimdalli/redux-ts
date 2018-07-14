@@ -2,8 +2,8 @@ import { Action as ReduxAction } from 'redux'
 
 export interface Action<TPayload = any, TMeta = any>
   extends ReduxAction<string> {
-  payload?: TPayload
-  meta?: TMeta
+  payload: TPayload
+  meta: TMeta
 }
 
 export interface ActionCreatorDefinition<TPayload, TMeta> {
