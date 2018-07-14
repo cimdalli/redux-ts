@@ -1,6 +1,6 @@
 {
   "name": "redux-ts",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "description": "Utils to define redux reducer/action in typescript",
   "main": "dist/redux-ts.production.min.js",
   "typings": "dist/src/index.d.ts",
