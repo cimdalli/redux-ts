@@ -4,8 +4,7 @@
     "target": "es5",
     "noImplicitAny": true,
     "experimentalDecorators": true,
-    "lib": ["dom", "es5", "es2015.promise", "es2015.core"],
-    "outDir": "dist"
+    "lib": ["dom", "es5", "es2015.promise", "es2015.core"]
   },
   "exclude": ["node_modules", "tests"]
 }
