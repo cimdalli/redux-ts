@@ -47,7 +47,7 @@ const layoutReducer = new ReducerBuilder<LayoutState>()
 )
 
 // Build store
-const store = new StoreBuilder<StoreState>()
+export const store = new StoreBuilder<StoreState>()
   .withReducerBuildersMap({ layout: layoutReducer })
   .withDevTools() // enable chrome devtools
   .build()
