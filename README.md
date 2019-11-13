@@ -47,12 +47,10 @@ const layoutReducer = new ReducerBuilder<LayoutState>()
 )
 
 // Build store
-export const store = new StoreBuilder<StoreState>()
+export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
   .withReducerBuildersMap({ layout: layoutReducer })
   .withDevTools() // enable chrome devtools
   .build()
-
-export { mapStoreToProps } = store
 ```
 
 ```tsx
@@ -99,7 +97,7 @@ import { connectRouter, routerMiddleware } from 'connected-react-router'
 
 export const history = createBrowserHistory()
 const routerReducer = connectRouter(history)
-export const store = new StoreBuilder<StoreState>()
+export const [store] = new StoreBuilder<StoreState>()
   .withMiddleware(routerMiddleware(history))
   .withReducer('router', routerReducer)
   .withDevTools() // enable chrome devtools
@@ -137,20 +135,18 @@ Create redux store with builder pattern.
 import { StoreBuilder } from 'redux-ts'
 import { authReducer } from './reducers/authReducer'
 
-const store = new StoreBuilder<StoreState>()
+export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
   .withInitialState({test:true})
   .withMiddleware()
   .withReducer("auth", authReducer)
   .withDevTools()
   .build();
 }
-
-export { mapStoreToProps } = store
 ```
 
 - As generic parameter, it requires store state type in order to match given reducers and the state.
 - Any number of middleware, enhancer or reducer can be used to build the state.
-- `mapStoreToProps` is public method that is exposed from store object. This method can be used to map store object to props which are consumed from connected components. Return type is `MapStateToPropsParam` which is compatible with [connect](https://react-redux.js.org/api/connect).
+- `mapStoreToProps` is a dummy method that returns passed parameter again. This method can be used to map store object to props which are consumed from connected components. Return type is `MapStateToPropsParam` which is compatible with [connect](https://react-redux.js.org/api/connect).
 
 ### Actions
 

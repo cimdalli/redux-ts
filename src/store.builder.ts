@@ -148,13 +148,13 @@ export class StoreBuilder<S extends StoreState> {
    * As paramter, mapper function is required which takes store object and returns indexer object
    * You can expose that function from your store object to be able to use on connected components.
    * ex. 
-   * const store = new StoreBuilder<StoreState>().build()
-   * export { mapStoreToProps } = store
+   * const [store, mapStoreToProps] = new StoreBuilder<StoreState>().build()
+   * export { mapStoreToProps }
    * 
-   * @type {StateToProps<StoreState>}
+   * @type {StateToProps<S>}
    * @memberof StoreBuilder
    */
-  public mapStoreToProps: StateToProps<StoreState> = map => map
+  private mapStoreToProps: StateToProps<S> = map => map
 
   /**
    * Build an instance of store with configured values.
@@ -162,7 +162,7 @@ export class StoreBuilder<S extends StoreState> {
    * @returns {Store<StoreType>}
    * @memberof StoreBuilder
    */
-  public build(): Store<S> {
+  public build(): [Store<S>, StateToProps<S>] {
     const defer = Promise.defer<Dispatch<Action>>()
     const reducerMap = Object.keys(this.reducerBuilders).reduce(
       (p: any, r) => ({
@@ -178,6 +178,6 @@ export class StoreBuilder<S extends StoreState> {
 
     defer.resolve(store.dispatch)
 
-    return store
+    return [store, this.mapStoreToProps]
   }
 }

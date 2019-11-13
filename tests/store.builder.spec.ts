@@ -13,7 +13,7 @@ describe('Store', () => {
   const initState = { reducer: { test: true } }
 
   describe('with initial state', () => {
-    const store = new StoreBuilder()
+    const [store] = new StoreBuilder()
       .withInitialState(initState)
       .withReducersMap({ reducer })
       .build()
@@ -29,7 +29,7 @@ describe('Store', () => {
       isSet = true
       return next(action)
     }
-    const store = new StoreBuilder()
+    const [store] = new StoreBuilder()
       .withMiddleware(testMiddleware)
       .withReducersMap({ reducer })
       .build()
@@ -49,7 +49,7 @@ describe('Store', () => {
       }
       return state
     }
-    const store = new StoreBuilder().withReducer('test', testReducer).build()
+    const [store] = new StoreBuilder().withReducer('test', testReducer).build()
 
     store.dispatch(testAction)
 
@@ -66,7 +66,7 @@ describe('Store', () => {
       }
       return state
     }
-    const store = new StoreBuilder().withReducersMap({ testReducer }).build()
+    const [store] = new StoreBuilder().withReducersMap({ testReducer }).build()
 
     store.dispatch(testAction)
 
@@ -81,7 +81,7 @@ describe('Store', () => {
       isSet = true
       return f
     }
-    const store = new StoreBuilder()
+    const [store] = new StoreBuilder()
       .withReducersMap({ reducer })
       .withEnhancer(enhancer)
       .build()

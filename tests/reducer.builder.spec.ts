@@ -24,7 +24,7 @@ describe('Reducer', () => {
       isBasicActionCalled: true,
     })
 
-    const store = new StoreBuilder<StoreState>()
+    const [store] = new StoreBuilder<StoreState>()
       .withReducerBuildersMap({ reducer })
       .build()
 
@@ -41,7 +41,7 @@ describe('Reducer', () => {
         return state
       })
 
-    const store = new StoreBuilder<StoreState>()
+    const [store] = new StoreBuilder<StoreState>()
       .withReducerBuilder('reducer', reducer)
       .build()
 
@@ -84,7 +84,7 @@ describe('Reducer', () => {
           return next(a)
         })
         .withReducerBuildersMap({ reducer })
-        .build()
+        .build()[0]
 
       store.dispatch(SimpleAction())
     })
