@@ -3,7 +3,7 @@ node_js:
   - "node"
   - "lts/*"
 script:
-  - yarn prepublish
+  - yarn prepare
 branches:
   only:
     - master
