@@ -39,18 +39,15 @@ type StoreState = { layout: LayoutState }
 const switchTheme = createAction('switchTheme')
 
 // Build reducer
-const layoutReducer = new ReducerBuilder<LayoutState>().handle(
-  switchTheme,
-  (state, action) => {
+const layoutReducer = new ReducerBuilder<LayoutState>()
+  .handle(switchTheme, (state, action) => {
     const isDark = !state.layout.isDark
     return { ...state, isDark }
   },
 )
 
 // Build store
-export const { mapStoreToProps, connected, ...store } = new StoreBuilder<
-  StoreState
->()
+export const { mapStoreToProps, connected, ...store } = new StoreBuilder<StoreState>()
   .withReducerBuildersMap({ layout: layoutReducer })
   .withDevTools() // enable chrome devtools
   .build()
@@ -70,15 +67,13 @@ const storeProps = mapStoreToProps(store => ({
 const dispatchProps = mapDispatchToProps({ switchTheme })
 
 // Connect component
-const ConnectedMain = connected(
-  storeProps,
-  dispatchProps,
-)(({ theme, switchTheme }) => (
-  <div>
-    <span>Current theme: {theme}</span>
-    <button onClick={switchTheme}>Switch theme</button>
-  </div>
-))
+const ConnectedMain = connected(storeProps, dispatchProps)(
+  ({ theme, switchTheme }) => (
+    <div>
+      <span>Current theme: {theme}</span>
+      <button onClick={switchTheme}>Switch theme</button>
+    </div>
+  ))
 
 // Connect store
 const Root: React.FC = props => (
