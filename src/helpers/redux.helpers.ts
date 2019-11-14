@@ -1,4 +1,4 @@
-import { ActionCreatorDefinition, DispatchToProps, Indexer } from '..'
+import { ActionCreatorDefinition, DispatchToProps, Indexer } from '../'
 
 export const createAction = <TPayload = any, TMeta = any>(
   type: string,

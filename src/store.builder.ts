@@ -1,18 +1,10 @@
+import { connect } from 'react-redux'
 import {
-  applyMiddleware,
-  combineReducers,
-  compose,
-  createStore,
-  DeepPartial,
-  Dispatch,
-  Middleware,
-  Reducer,
-  ReducersMapObject,
-  Store,
-  StoreEnhancer,
+    applyMiddleware, combineReducers, compose, createStore, DeepPartial, Dispatch, Middleware,
+    Reducer, ReducersMapObject, StoreEnhancer
 } from 'redux'
 
-import { Action, ReducerBuilder, StateToProps } from '.'
+import { Action, ReducerBuilder, StateToProps, Store } from './'
 
 const devTool: StoreEnhancer = f =>
   (window as any).__REDUX_DEVTOOLS_EXTENSION__ || f
@@ -144,25 +136,12 @@ export class StoreBuilder<S extends StoreState> {
   }
 
   /**
-   * Dummy function to return `MapStateToProps` type that can be passed to `connect`
-   * As paramter, mapper function is required which takes store object and returns indexer object
-   * You can expose that function from your store object to be able to use on connected components.
-   * ex. 
-   * const [store, mapStoreToProps] = new StoreBuilder<StoreState>().build()
-   * export { mapStoreToProps }
-   * 
-   * @type {StateToProps<S>}
-   * @memberof StoreBuilder
-   */
-  private mapStoreToProps: StateToProps<S> = map => map
-
-  /**
    * Build an instance of store with configured values.
    *
    * @returns {Store<StoreType>}
    * @memberof StoreBuilder
    */
-  public build(): [Store<S>, StateToProps<S>] {
+  public build(): Store<S> {
     const defer = Promise.defer<Dispatch<Action>>()
     const reducerMap = Object.keys(this.reducerBuilders).reduce(
       (p: any, r) => ({
@@ -178,6 +157,13 @@ export class StoreBuilder<S extends StoreState> {
 
     defer.resolve(store.dispatch)
 
-    return [store, this.mapStoreToProps]
+    return {
+      ...store,
+      mapStoreToProps: map => map,
+      connected: (mapStateToProps, mapDispatchToProps) => mapDispatchToProps
+        ? (connect(mapStateToProps, mapDispatchToProps) as any)
+        : (connect(mapStateToProps) as any)
+
+    }
   }
 }

@@ -39,15 +39,18 @@ type StoreState = { layout: LayoutState }
 const switchTheme = createAction('switchTheme')
 
 // Build reducer
-const layoutReducer = new ReducerBuilder<LayoutState>()
-  .handle(switchTheme, (state, action) => {
+const layoutReducer = new ReducerBuilder<LayoutState>().handle(
+  switchTheme,
+  (state, action) => {
     const isDark = !state.layout.isDark
     return { ...state, isDark }
   },
 )
 
 // Build store
-export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
+export const { mapStoreToProps, connected, ...store } = new StoreBuilder<
+  StoreState
+>()
   .withReducerBuildersMap({ layout: layoutReducer })
   .withDevTools() // enable chrome devtools
   .build()
@@ -56,14 +59,7 @@ export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
 ```tsx
 import React from 'react'
 import { mapDispatchToProps } from 'redux-ts'
-import { mapStoreToProps, store } from './store'
-
-// Connect store
-const Root: React.FC = props => (
-  <Provider store={store}>
-    <Main />
-  </Provider>
-)
+import { connected, mapStoreToProps, store } from './store'
 
 // Map store to component props
 const storeProps = mapStoreToProps(store => ({
@@ -74,11 +70,21 @@ const storeProps = mapStoreToProps(store => ({
 const dispatchProps = mapDispatchToProps({ switchTheme })
 
 // Connect component
-const Main = connect(storeProps, dispatchProps)(({ theme, switchTheme }) => (
+const ConnectedMain = connected(
+  storeProps,
+  dispatchProps,
+)(({ theme, switchTheme }) => (
   <div>
     <span>Current theme: {theme}</span>
     <button onClick={switchTheme}>Switch theme</button>
   </div>
+))
+
+// Connect store
+const Root: React.FC = props => (
+  <Provider store={store}>
+    <ConnectedMain />
+  </Provider>
 )
 
 ReactDOM.render(<Root />, document.getElementById('app'))
@@ -97,7 +103,7 @@ import { connectRouter, routerMiddleware } from 'connected-react-router'
 
 export const history = createBrowserHistory()
 const routerReducer = connectRouter(history)
-export const [store] = new StoreBuilder<StoreState>()
+export const store = new StoreBuilder<StoreState>()
   .withMiddleware(routerMiddleware(history))
   .withReducer('router', routerReducer)
   .withDevTools() // enable chrome devtools
@@ -135,7 +141,7 @@ Create redux store with builder pattern.
 import { StoreBuilder } from 'redux-ts'
 import { authReducer } from './reducers/authReducer'
 
-export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
+export const { connected, mapStoreToProps, ...store } = new StoreBuilder<StoreState>()
   .withInitialState({test:true})
   .withMiddleware()
   .withReducer("auth", authReducer)
@@ -147,6 +153,7 @@ export const [store, mapStoreToProps] = new StoreBuilder<StoreState>()
 - As generic parameter, it requires store state type in order to match given reducers and the state.
 - Any number of middleware, enhancer or reducer can be used to build the state.
 - `mapStoreToProps` is a dummy method that returns passed parameter again. This method can be used to map store object to props which are consumed from connected components. Return type is `MapStateToPropsParam` which is compatible with [connect](https://react-redux.js.org/api/connect).
+- `connected` function is also another dummy function that wraps original [connect](https://react-redux.js.org/api/connect) function but with implicit type resolution support. Problem with original one, when you connect your component with connect method, it is trying to resolve typing by matching signature you passed as parameters to connect _(mapStateToProps, mapDispatchToProps)_ and component own properties. If you are using explicit typing mostly, it is totally fine to use original one. But if you are expecting implicit type resolution, original connect is failing and resolving inner component type as `never`.
 
 ### Actions
 
@@ -231,13 +238,16 @@ export const authReducer = new ReducerBuilder<AuthState>()
 
 [connect](https://react-redux.js.org/api/connect) method is part of [react-redux](https://github.com/reduxjs/react-redux) library that allows you to connect your react components with redux store.
 
+> You can use `connected` method for implicit type resolution.
+
 ```tsx
 import * as React from 'react'
-import { connect } from 'react-redux'
 import { mapDispatchToProps } from 'redux-ts'
-import { mapStoreToProps } from '../store'
+import { store } from '../store'
 import { ChangeTheme } from '../actions/layout.actions'
 import { Logout } from '../actions/auth.actions'
+
+const { mapStoreToProps, connected } = store
 
 // Map store object to component props
 const storeProps = mapStoreToProps(store => ({
@@ -250,7 +260,7 @@ const dispatchProps = mapDispatchToProps({
   ChangeTheme
 })
 
-export const Layout = connect(storeProps, dispatchProps)(({
+export const Layout = connected(storeProps, dispatchProps)(({
   children,     // standard react prop
   useDarkTheme, // mapped store prop
   Logout,       // mapped action prop

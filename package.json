@@ -1,6 +1,6 @@
 {
   "name": "redux-ts",
-  "version": "4.2.0-rc.3",
+  "version": "4.2.0-rc.6",
   "description": "Utils to define redux reducer/action in typescript",
   "main": "dist/redux-ts.production.min.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
     "build:prod": "webpack --config webpack.prod.js",
     "clean": "rimraf dist lib",
     "build": "npm run clean && npm run build:dev && npm run build:prod",
-    "prepublish": "npm run test && npm run build",
+    "prepare": "npm run test && npm run build",
     "test": "mocha --require source-map-support/register --require ts-node/register tests/**/*.spec.ts"
   },
   "tags": [
