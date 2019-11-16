@@ -1,15 +1,14 @@
 import { connect } from 'react-redux'
 import {
-    applyMiddleware, combineReducers, compose, createStore, DeepPartial, Dispatch, Middleware,
-    Reducer, ReducersMapObject, StoreEnhancer
+  applyMiddleware, combineReducers, compose, createStore, DeepPartial, Dispatch, Middleware,
+  Reducer, ReducersMapObject, StoreEnhancer
 } from 'redux'
 
-import { Action, ReducerBuilder, StateToProps, Store } from './'
+import { Action, ReducerBuilder, Store } from './'
 
-const devTool: StoreEnhancer = f =>
-  (window as any).__REDUX_DEVTOOLS_EXTENSION__ || f
-
-type StoreState = { [key: string]: any }
+interface StoreState {
+  [key: string]: any
+}
 type ReducerBuilderMap<S> = { [key in keyof S]: ReducerBuilder }
 
 export class StoreBuilder<S extends StoreState> {
@@ -17,14 +16,15 @@ export class StoreBuilder<S extends StoreState> {
   private reducers: ReducersMapObject<S>
   private reducerBuilders: ReducerBuilderMap<S>
   private initialState: DeepPartial<S>
-  private enhancer: StoreEnhancer
+  private enhancers: StoreEnhancer[]
+  private composeEnhancers = compose
 
   constructor() {
     this.middlewares = []
     this.reducers = {} as ReducersMapObject<S>
     this.reducerBuilders = {} as ReducerBuilderMap<S>
     this.initialState = {}
-    this.enhancer = f => f
+    this.enhancers = []
   }
 
   /**
@@ -118,9 +118,8 @@ export class StoreBuilder<S extends StoreState> {
    * @returns
    * @memberof StoreBuilder
    */
-  public withEnhancer(enhancer: StoreEnhancer) {
-    const preEnhancer = this.enhancer
-    this.enhancer = f => enhancer(preEnhancer(f))
+  public withEnhancer(...enhancers: StoreEnhancer[]) {
+    this.enhancers.push(...enhancers)
     return this
   }
 
@@ -131,7 +130,9 @@ export class StoreBuilder<S extends StoreState> {
    * @memberof StoreBuilder
    */
   public withDevTools() {
-    this.withEnhancer(devTool)
+    this.composeEnhancers =
+      (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ||
+      this.composeEnhancers
     return this
   }
 
@@ -151,19 +152,19 @@ export class StoreBuilder<S extends StoreState> {
       this.reducers,
     )
     const middlewares = applyMiddleware(...this.middlewares)
-    const reducers = combineReducers<S>(reducerMap)
-    const composer = compose(middlewares, this.enhancer)(createStore)
-    const store = composer(reducers, this.initialState)
+    const reducer = combineReducers<S>(reducerMap)
+    const enhancer = this.composeEnhancers(middlewares, ...this.enhancers)
+    const store = createStore(reducer, this.initialState, enhancer)
 
     defer.resolve(store.dispatch)
 
     return {
       ...store,
+      connected: (mapStateToProps, mapDispatchToProps) =>
+        mapDispatchToProps
+          ? (connect(mapStateToProps, mapDispatchToProps) as any)
+          : (connect(mapStateToProps) as any),
       mapStoreToProps: map => map,
-      connected: (mapStateToProps, mapDispatchToProps) => mapDispatchToProps
-        ? (connect(mapStateToProps, mapDispatchToProps) as any)
-        : (connect(mapStateToProps) as any)
-
     }
   }
 }

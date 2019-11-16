@@ -1,6 +1,6 @@
 import { Dispatch, Reducer } from 'redux'
 
-import { Action, ActionBody, ActionCreatorDefinition, LazyDispatch } from '.'
+import { Action, ActionBody, ActionCreatorDefinition, LazyDispatch } from './'
 
 export class ReducerBuilder<State = {}> {
   private actions: { [type: string]: ActionBody<State, Action> } = {}
