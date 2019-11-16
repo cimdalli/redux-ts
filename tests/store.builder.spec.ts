@@ -1,6 +1,8 @@
 import 'mocha'
+
 import { expect } from 'chai'
-import { Action, StoreCreator, Middleware } from 'redux'
+import { Action, Middleware, StoreCreator } from 'redux'
+
 import { StoreBuilder } from '../src'
 
 describe('Store', () => {

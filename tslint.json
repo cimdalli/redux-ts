@@ -1,11 +1,13 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint-config-airbnb"],
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
     "semicolon": false,
     "ter-arrow-parens": [true, "as-needed"],
-    "variable-name": [true, "allow-pascal-case"]
+    "variable-name": [true, "allow-pascal-case"],
+    "interface-name": false,
+    "interface-over-type-literal": false
   },
   "rulesDirectory": []
 }

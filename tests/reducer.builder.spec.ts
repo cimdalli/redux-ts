@@ -1,7 +1,9 @@
 import 'mocha'
+
 import { expect } from 'chai'
-import { Store, Reducer } from 'redux'
-import { ReducerBuilder, StoreBuilder, createAction } from '../src'
+import { Store } from 'redux'
+
+import { createAction, ReducerBuilder, StoreBuilder } from '../src'
 
 interface ReducerState {
   isBasicActionCalled: boolean

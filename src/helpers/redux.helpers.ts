@@ -1,4 +1,4 @@
-import { ActionCreatorDefinition, DispatchToProps, Indexer } from '..'
+import { ActionCreatorDefinition, DispatchToProps, Indexer } from '../'
 
 export const createAction = <TPayload = any, TMeta = any>(
   type: string,
@@ -12,6 +12,18 @@ export const createAction = <TPayload = any, TMeta = any>(
   return creator
 }
 
+
+/**
+* Dummy function to return `MapDispatchToPropsParam` type that can be passed to `connect`
+* As paramter, either mapper function which takes dispatch object and returns indexer object or indexer object is required
+* ex. 
+* const changeLayout = createAction('changeLayout')
+* const dispatchedProps = mapDispatchToProps((dispatch, own) => ({ changeLayout: () => dispatch(changeLayout()) }))
+* // or
+* const dispatchedProps = mapDispatchToProps({ changeLayout }))
+* 
+* @param {*} map
+*/
 export const mapDispatchToProps: DispatchToProps = map => (dispatch, own) => {
   const mapper = <T extends Indexer>(m: T) =>
     Object.keys(m).reduce(
